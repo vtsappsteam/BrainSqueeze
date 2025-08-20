@@ -1,0 +1,15 @@
+{
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "quotes": ["error", "double"],
+    "semi": ["error", "always"],
+    "prefer-const": "error",
+    "no-undef": "error",
+    "no-unused-vars": [
+      "error",
+      { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }
+    ]
+  }
+}

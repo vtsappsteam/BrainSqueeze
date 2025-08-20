@@ -1,0 +1,47 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build output
+dist/
+build/
+
+# OS fajlovi
+.DS_Store
+Thumbs.db
+
+# IDE fajlovi
+.vscode/
+.idea/
+
+# Coverage (testovi)
+coverage/
+.nyc_output/
+
+# TypeScript (ako koristiš)
+*.tsbuildinfo
+
+# PM2 logs i pid fajlovi
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache direktorijumi
+.npm
+.eslintcache
+
+# Docker fajlovi (ako ne želiš da idu u repo)
+docker-compose.override.yml
