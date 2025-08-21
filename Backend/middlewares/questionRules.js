@@ -5,6 +5,11 @@ const validateQuestionRequest = (req, res, next) => {
     wrongAnswer1,
     wrongAnswer2,
     wrongAnswer3,
+    engQuestion,
+    engCorrectAnswer,
+    engWrongAnswer1,
+    engWrongAnswer2,
+    engWrongAnswer3,
     categoryId,
     questionDifficultyId,
   } = req.body;
@@ -37,6 +42,36 @@ const validateQuestionRequest = (req, res, next) => {
     return res.status(400).json({
       status: 400,
       error: "Missing required parameter: 'wrongAnswer3'",
+    });
+  }
+  if (!engQuestion) {
+    return res.status(400).json({
+      status: 400,
+      error: "Missing required parameter: 'engQuestion'",
+    });
+  }
+  if (!engCorrectAnswer) {
+    return res.status(400).json({
+      status: 400,
+      error: "Missing required parameter: 'engCorrectAnswer'",
+    });
+  }
+  if (!engWrongAnswer1) {
+    return res.status(400).json({
+      status: 400,
+      error: "Missing required parameter: 'engWrongAnswer1'",
+    });
+  }
+  if (!engWrongAnswer2) {
+    return res.status(400).json({
+      status: 400,
+      error: "Missing required parameter: 'engWrongAnswer2'",
+    });
+  }
+  if (!engWrongAnswer3) {
+    return res.status(400).json({
+      status: 400,
+      error: "Missing required parameter: 'engWrongAnswer3'",
     });
   }
   if (!categoryId) {

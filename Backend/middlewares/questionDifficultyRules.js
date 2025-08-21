@@ -1,10 +1,16 @@
 const validateQuestionDifficultyRequest = (req, res, next) => {
-  const { name, maxThreshold, minThreshold } = req.body;
+  const { name, engName, maxThreshold, minThreshold } = req.body;
 
   if (!name) {
     return res.status(400).json({
       status: 400,
       error: "Missing required parameter: 'name'",
+    });
+  }
+  if (!engName) {
+    return res.status(400).json({
+      status: 400,
+      error: "Missing required parameter: 'engName'",
     });
   }
   if (!maxThreshold) {

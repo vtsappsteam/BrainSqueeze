@@ -28,7 +28,7 @@ const getAllQuestionsEndpoint = async (req, res) => {
     const totalCount = parseInt(totalCountResult.rows[0].count);
     const totalPages = Math.ceil(totalCount / limit);
     const questions = await getQuestions(limit, offset);
-    const data = convertKeys(questions.rows, "camel");
+    const data = convertKeys(questions, "camel");
 
     res.json({
       page,
@@ -81,6 +81,11 @@ const createQuestionEndpoint = async (req, res) => {
       req.body.wrongAnswer1,
       req.body.wrongAnswer2,
       req.body.wrongAnswer3,
+      req.body.engQuestion,
+      req.body.engCorrectAnswer,
+      req.body.engWrongAnswer1,
+      req.body.engWrongAnswer2,
+      req.body.engWrongAnswer3,
       req.body.categoryId,
       req.body.questionDifficultyId,
       timesViewed,
@@ -119,6 +124,11 @@ const updateQuestionEndpoint = async (req, res) => {
       req.body.wrongAnswer1,
       req.body.wrongAnswer2,
       req.body.wrongAnswer3,
+      req.body.engQuestion,
+      req.body.engCorrectAnswer,
+      req.body.engWrongAnswer1,
+      req.body.engWrongAnswer2,
+      req.body.engWrongAnswer3,
       req.body.categoryId,
       req.body.questionDifficultyId,
     ];

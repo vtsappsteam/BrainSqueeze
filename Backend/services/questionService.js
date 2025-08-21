@@ -5,14 +5,42 @@ const totalQuestionsCount = async () => {
   return await pool.query(`SELECT COUNT(*) FROM ${tableNames.QUESTION_TABLE}`);
 };
 
+const calculateWrongCategory = (
+  answeredCorrectly,
+  timesViewed,
+  minThreshold,
+  maxThreshold
+) => {
+  const threshold = Math.round(
+    (parseInt(answeredCorrectly) / parseInt(timesViewed)) * 100
+  );
+
+  return (
+    threshold < parseInt(minThreshold) * 0.8 ||
+    threshold > parseInt(maxThreshold) * 1.2
+  );
+};
+
 const getQuestions = async (limit, offset) => {
-  return await pool.query(
-    `SELECT q.id, question, correct_answer, times_viewed, answered_correctly, c.name as category_name, qd.name as difficulty_name
+  const questions = await pool.query(
+    `SELECT q.id, question, correct_answer, times_viewed, answered_correctly, c.name as category_name, qd.name AS difficulty_name, qd.min_threshold, qd.max_threshold
         FROM ${tableNames.QUESTION_TABLE} AS q, ${tableNames.CATEGORY_TABLE} AS c, ${tableNames.DIFFICULTY_TABLE} AS qd
         WHERE q.category_id = c.id AND q.difficulty_id = qd.id
         ORDER BY id LIMIT $1 OFFSET $2`,
     [limit, offset]
   );
+  const rows = questions.rows.map((row) => {
+    return {
+      ...row,
+      wrongCategory: calculateWrongCategory(
+        row.answered_correctly,
+        row.times_viewed,
+        row.min_threshold,
+        row.max_threshold
+      ),
+    };
+  });
+  return rows;
 };
 
 const getQuestion = async (questionId) => {
@@ -30,14 +58,21 @@ const createQuestion = async (
   wrongAnswer1,
   wrongAnswer2,
   wrongAnswer3,
+  engQuestion,
+  engCorrectAnswer,
+  engWrongAnswer1,
+  engWrongAnswer2,
+  engWrongAnswer3,
   categoryId,
   difficultyId,
   timesViewed = 0,
   answeredCorrectly = 0
 ) => {
   const query = `INSERT INTO ${tableNames.QUESTION_TABLE}
-    (question, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, category_id, difficulty_id, times_viewed, answered_correctly)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
+    (question, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3,
+    eng_question, eng_correct_answer, eng_wrong_answer_1, eng_wrong_answer_2, eng_wrong_answer_3,
+       category_id, difficulty_id, times_viewed, answered_correctly)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`;
 
   const values = [
     question,
@@ -45,6 +80,11 @@ const createQuestion = async (
     wrongAnswer1,
     wrongAnswer2,
     wrongAnswer3,
+    engQuestion,
+    engCorrectAnswer,
+    engWrongAnswer1,
+    engWrongAnswer2,
+    engWrongAnswer3,
     categoryId,
     difficultyId,
     timesViewed,
@@ -61,6 +101,11 @@ const updateQuestion = async (
   wrongAnswer1,
   wrongAnswer2,
   wrongAnswer3,
+  engQuestion,
+  engCorrectAnswer,
+  engWrongAnswer1,
+  engWrongAnswer2,
+  engWrongAnswer3,
   categoryId,
   difficultyId
 ) => {
@@ -70,8 +115,13 @@ const updateQuestion = async (
         wrong_answer_1 = $4, 
         wrong_answer_2 = $5, 
         wrong_answer_3 = $6, 
-        category_id = $7, 
-        difficulty_id = $8 
+        eng_question = $7,
+        eng_correct_answer = $8,
+        eng_wrong_answer_1 = $9,
+        eng_wrong_answer_2 = $10,
+        eng_wrong_answer_3 = $11,
+        category_id = $12, 
+        difficulty_id = $13 
     WHERE id = $1`;
 
   const values = [
@@ -81,6 +131,11 @@ const updateQuestion = async (
     wrongAnswer1,
     wrongAnswer2,
     wrongAnswer3,
+    engQuestion,
+    engCorrectAnswer,
+    engWrongAnswer1,
+    engWrongAnswer2,
+    engWrongAnswer3,
     categoryId,
     difficultyId,
   ];

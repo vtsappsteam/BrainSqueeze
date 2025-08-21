@@ -21,15 +21,15 @@ const getCategories = async (limit, offset) => {
   );
 };
 
-const createCategory = async (categoryName) => {
+const createCategory = async (name, engName) => {
   const query = `INSERT INTO ${tableNames.CATEGORY_TABLE}
-  (name, total_questions) VALUES ($1, $2)`;
-  await pool.query(query, [categoryName, 0]);
+  (name, eng_name, total_questions) VALUES ($1, $2, $3)`;
+  await pool.query(query, [name, engName, 0]);
 };
 
-const updateCategory = async (categoryId, categoryName) => {
-  const query = `UPDATE ${tableNames.CATEGORY_TABLE} SET name=$2 WHERE id=$1`;
-  await pool.query(query, [categoryId, categoryName]);
+const updateCategory = async (categoryId, name, engName) => {
+  const query = `UPDATE ${tableNames.CATEGORY_TABLE} SET name=$2, eng_name=$3 WHERE id=$1`;
+  await pool.query(query, [categoryId, name, engName]);
 };
 
 const updateTotalQuestionsForCategory = async (categoryId) => {

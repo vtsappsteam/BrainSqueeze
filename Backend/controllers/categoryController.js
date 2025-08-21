@@ -50,22 +50,18 @@ const getAllCategoriesWithDifficultiesEndpoint = async (req, res) => {
 
     for (const category of categories.rows) {
       const difficultyResults = await getDifficultiesByCategoryId(category.id);
-      if (difficultyResults.rows.length !== 0) {
-        console.log(difficultyResults.rows);
-        const difficulties = [];
-        difficultyResults.rows.forEach((difficulty) => {
-          difficulties.push({
-            id: difficulty.id,
-            name: difficulty.name,
-            totalQuestions: difficulty.total,
-          });
-        });
-        transformedData.push({
-          id: category.id,
-          categoryName: category.name,
-          difficulties,
-        });
-      }
+
+      transformedData.push({
+        id: category.id,
+        categoryName: category.name,
+        totalQuestions: category.total_questions,
+        totalQuestions1:
+          difficultyResults.rows?.find((x) => x.id === "1")?.total ?? "0",
+        totalQuestions2:
+          difficultyResults.rows?.find((x) => x.id === "2")?.total ?? "0",
+        totalQuestions3:
+          difficultyResults.rows?.find((x) => x.id === "3")?.total ?? "0",
+      });
     }
 
     res.json({
@@ -102,7 +98,7 @@ const getCategoryByIdEndpoint = async (req, res) => {
 
 const createCategoryEndpoint = async (req, res) => {
   try {
-    await createCategory(req.body.name);
+    await createCategory(req.body.name, req.body.engName);
     let apires = {
       status: 200,
       message: "Successfully created Category.",
@@ -130,7 +126,7 @@ const deleteCategoryEndpoint = async (req, res) => {
 
 const updateCategoryEndpoint = async (req, res) => {
   try {
-    await updateCategory(req.params.id, req.body.name);
+    await updateCategory(req.params.id, req.body.name, req.body.engName);
     let apires = {
       status: 200,
       message: "Successfully updated Category.",

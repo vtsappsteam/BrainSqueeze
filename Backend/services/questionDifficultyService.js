@@ -29,22 +29,34 @@ const getDifficultiesByCategoryId = async (categoryId) => {
   return await pool.query(difficultyQuery, [categoryId]);
 };
 
-const createQuestionDifficulty = async (name, minThreshold, maxThreshold) => {
+const createQuestionDifficulty = async (
+  name,
+  engName,
+  minThreshold,
+  maxThreshold
+) => {
   const query = `INSERT INTO ${tableNames.DIFFICULTY_TABLE} 
-  (name, min_threshold, max_threshold, total_questions) VALUES ($1, $2, $3, $4)`;
-  const values = [name, minThreshold, maxThreshold, 0];
+  (name, eng_name, min_threshold, max_threshold, total_questions) VALUES ($1, $2, $3, $4, $5)`;
+  const values = [name, engName, minThreshold, maxThreshold, 0];
   await pool.query(query, values);
 };
 
 const updateQuestionDifficulty = async (
   questionDifficultyId,
   name,
+  engName,
   minThreshold,
   maxThreshold
 ) => {
   const query = `UPDATE ${tableNames.DIFFICULTY_TABLE} 
-  SET name=$2, min_threshold=$3, max_threshold=$4 WHERE id=$1`;
-  const values = [questionDifficultyId, name, minThreshold, maxThreshold];
+  SET name=$2, eng_name=$3, min_threshold=$4, max_threshold=$5 WHERE id=$1`;
+  const values = [
+    questionDifficultyId,
+    name,
+    engName,
+    minThreshold,
+    maxThreshold,
+  ];
   await pool.query(query, values);
 };
 

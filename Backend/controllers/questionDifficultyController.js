@@ -44,6 +44,7 @@ const createQuestionDifficultyEndpoint = async (req, res) => {
   try {
     await createQuestionDifficulty(
       req.body.name,
+      req.body.engName,
       req.body.minThreshold,
       req.body.maxThreshold
     );
@@ -66,6 +67,7 @@ const updateQuestionDifficultyEndpoint = async (req, res) => {
     await updateQuestionDifficulty(
       req.params.id,
       req.body.name,
+      req.body.engName,
       req.body.minThreshold,
       req.body.maxThreshold
     );
