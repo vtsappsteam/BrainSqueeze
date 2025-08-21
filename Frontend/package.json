@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && powershell Copy-Item -Path web.config -Destination dist\\web.config",
     "preview": "vite preview"
   },
   "dependencies": {
