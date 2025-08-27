@@ -1,4 +1,7 @@
 <script setup>
+import EditIcon from "@/assets/icons/edit.svg";
+import DeleteIcon from "@/assets/icons/delete.svg";
+
 const props = defineProps({
   questionDifficulties: {
     type: Array,
@@ -52,7 +55,7 @@ const handleDeleteExistingQuestionDifficulty = (id) => {
                 handleEditExistingQuestionDifficulty(questionDifficulty.id)
               "
             >
-              Uredi
+              <EditIcon />
             </button>
             <button
               class="actions-container__btn-delete"
@@ -60,7 +63,7 @@ const handleDeleteExistingQuestionDifficulty = (id) => {
                 handleDeleteExistingQuestionDifficulty(questionDifficulty.id)
               "
             >
-              Obriši
+              <DeleteIcon />
             </button>
           </td>
         </tr>

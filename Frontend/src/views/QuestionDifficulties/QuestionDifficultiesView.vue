@@ -16,7 +16,6 @@ const fetchQuestionDifficulties = async () => {
   try {
     const response = await getAllQuestionDifficulties({});
     questionDifficulties.value = response.content;
-    console.log(response);
   } catch (error) {
     console.error(error);
   }

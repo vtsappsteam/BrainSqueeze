@@ -1,9 +1,15 @@
 <script setup>
-import LeftSidebarLayout from '@/components/layouts/LeftSidebarLayout.vue';
+import { useRoute } from "vue-router";
+import LeftSidebarLayout from "@/components/layouts/LeftSidebarLayout.vue";
+
+const route = useRoute();
 </script>
 
 <template>
-  <LeftSidebarLayout />
+  <LeftSidebarLayout
+    v-if="route.path !== '/login' && route.path !== '/register'"
+  />
+  <router-view v-else />
 </template>
 
 <style src="@/styles/styles.scss"></style>

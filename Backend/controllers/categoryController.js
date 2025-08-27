@@ -5,7 +5,6 @@ const {
   deleteCategory,
   updateCategory,
   createCategory,
-  totalCategoriesCount,
 } = require("../services/categoryService");
 const {
   getDifficultiesByCategoryId,
@@ -15,12 +14,12 @@ const getAllCategoriesEndpoint = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
+  const filterName = req.query.filterName || null;
   try {
-    const totalCountResult = await totalCategoriesCount();
-    const totalCount = parseInt(totalCountResult.rows[0].count);
+    const categories = await getCategories(filterName, limit, offset);
+    const totalCount =
+      categories.rows.length > 0 ? parseInt(categories.rows[0].total_count) : 0;
     const totalPages = Math.ceil(totalCount / limit);
-
-    const categories = await getCategories(limit, offset);
     const data = convertKeys(categories.rows, "camel");
 
     res.json({
@@ -40,12 +39,12 @@ const getAllCategoriesWithDifficultiesEndpoint = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
+  const filterName = req.query.filterName || null;
   try {
-    const totalCountResult = await totalCategoriesCount();
-    const totalCount = parseInt(totalCountResult.rows[0].count);
+    const categories = await getCategories(filterName, limit, offset);
+    const totalCount =
+      categories.rows.length > 0 ? parseInt(categories.rows[0].total_count) : 0;
     const totalPages = Math.ceil(totalCount / limit);
-
-    const categories = await getCategories(limit, offset);
     const transformedData = [];
 
     for (const category of categories.rows) {

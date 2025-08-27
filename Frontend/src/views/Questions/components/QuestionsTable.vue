@@ -1,4 +1,7 @@
 <script setup>
+import EditIcon from "@/assets/icons/edit.svg";
+import DeleteIcon from "@/assets/icons/delete.svg";
+
 const props = defineProps({
   questions: {
     type: Array,
@@ -38,7 +41,7 @@ const handleDeleteExistingQuestion = (id) => {
       <tbody>
         <tr v-for="question in questions" :key="question.id">
           <td>{{ question.id }}</td>
-          <td>{{ question.question }}</td>
+          <td v-html="question.question"></td>
           <td>{{ question.correctAnswer }}</td>
           <td>{{ question.timesViewed }}</td>
           <td>
@@ -59,13 +62,13 @@ const handleDeleteExistingQuestion = (id) => {
               class="actions-container__btn-edit"
               @click="handleEditExistingQuestion(question.id)"
             >
-              Uredi
+              <EditIcon />
             </button>
             <button
               class="actions-container__btn-delete"
               @click="handleDeleteExistingQuestion(question.id)"
             >
-              Obriši
+              <DeleteIcon />
             </button>
           </td>
         </tr>

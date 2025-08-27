@@ -9,7 +9,7 @@ import QuestionsSubHeader from "./components/QuestionsSubHeader.vue";
 import QuestionsTable from "./components/QuestionsTable.vue";
 
 const questions = ref([]);
-const limit = ref(10);
+const limit = ref(100);
 const page = ref(1);
 const totalPages = ref(1);
 const router = useRouter();
@@ -22,7 +22,6 @@ const fetchQuestions = async () => {
     });
     questions.value = response.content;
     totalPages.value = response.totalPages;
-    console.log(response);
   } catch (error) {
     console.error(error);
   }

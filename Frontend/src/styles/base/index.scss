@@ -6,7 +6,16 @@
   padding: 0;
 }
 
-html,body {
+@font-face {
+  font-family: "DMSans";
+  src: url("../../assets/fonts/DMSans-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+html,
+body {
   height: 100vh;
   width: 100vw;
+  font-family: "DMSans", sans-serif;
 }

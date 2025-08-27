@@ -17,7 +17,6 @@ const fetchUser = async (id) => {
   firstNameInput.value = data.firstName;
   lastNameInput.value = data.lastName;
   emailInput.value = data.email;
-  console.log(response);
 };
 
 const handleSaveUser = async () => {
@@ -25,7 +24,7 @@ const handleSaveUser = async () => {
     firstName: firstNameInput.value,
     lastName: lastNameInput.value,
     email: emailInput.value,
-    roleId: 1,
+    password: passwordInput.value,
   };
   try {
     if (route.query.id) {
@@ -55,13 +54,7 @@ onMounted(() => {
     @handle-save-user="handleSaveUser"
     @handle-go-back="handleGoBack"
   />
-  <div>
-    <div class="app">
-      <div>
-        <button>SRPSKI</button>
-        <button>ENGLESKI</button>
-      </div>
-    </div>
+  <div class="app">
     <div>
       <div>
         <label for="firstNameInput"> Ime </label>
@@ -71,16 +64,18 @@ onMounted(() => {
           type="text"
           class="firstNameInput"
           placeholder="Unesite ime korisnika"
+          required
         />
       </div>
       <div>
-        <label for="lastNameInput"> Ime </label>
+        <label for="lastNameInput"> Prezime </label>
         <input
           id="lastNameInput"
           v-model="lastNameInput"
           type="text"
           class="lastNameInput"
           placeholder="Unesite prezime korisnika"
+          required
         />
       </div>
       <div>
@@ -88,17 +83,23 @@ onMounted(() => {
         <input
           id="emailInput"
           v-model="emailInput"
-          type="text"
-          class="emailInput"
+          type="email"
           placeholder="Unesite email korisnika"
+          required
+        />
+      </div>
+      <div>
+        <label for="passwordInput"> Password: </label>
+        <input
+          id="passwordInput"
+          v-model="passwordInput"
+          type="password"
+          placeholder="Unesite password korisnika"
+          required
         />
       </div>
     </div>
   </div>
 </template>
 
-<style>
-.app {
-  font: DM Sans 14pt;
-}
-</style>
+<style></style>

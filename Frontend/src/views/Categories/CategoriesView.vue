@@ -2,14 +2,14 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import {
-  getAllCategories,
+  getAllCategoriesWithDifficulties,
   deleteCategory,
 } from "@/services/Categories/categories";
 import CategoriesSubHeader from "@/views/Categories/components/CategoriesSubHeader.vue";
 import CategoriesTable from "@/views/Categories/components/CategoriesTable.vue";
 
 const categories = ref([]);
-const limit = ref(10);
+const limit = ref(100);
 const page = ref(1);
 const totalPages = ref(1);
 
@@ -17,13 +17,12 @@ const router = useRouter();
 
 const fetchCategories = async () => {
   try {
-    const response = await getAllCategories({
+    const response = await getAllCategoriesWithDifficulties({
       page: page.value,
       limit: limit.value,
     });
     categories.value = response.content;
     totalPages.value = response.totalPages;
-    console.log(response);
   } catch (error) {
     console.error(error);
   }

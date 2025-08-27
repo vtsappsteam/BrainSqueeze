@@ -13,8 +13,6 @@ const handleGoBack = () => {
 <template>
   <div class="header">
     <button class="header__btn-back" @click="handleGoBack"><</button>
-  </div>
-  <div class="header">
     <button class="header__btn-add" @click="handleSaveQuestionDifficulty">
       Sačuvaj izmene
     </button>
@@ -25,7 +23,7 @@ const handleGoBack = () => {
 .header {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 0.5rem;
   border-bottom: 1px solid #ccc;
 

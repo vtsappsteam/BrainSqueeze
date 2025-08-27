@@ -21,7 +21,6 @@ const fetchQuestionDifficulty = async (id) => {
   questionDifficultyNameInput.value = data.name;
   questionDifficultyMinThresholdInput.value = data.minThreshold;
   questionDifficultyMaxThresholdInput.value = data.maxThreshold;
-  console.log(response);
 };
 
 const handleSaveQuestionDifficulty = async () => {
@@ -103,8 +102,4 @@ onMounted(() => {
   </div>
 </template>
 
-<style>
-.app {
-  font: DM Sans 14pt;
-}
-</style>
+<style></style>

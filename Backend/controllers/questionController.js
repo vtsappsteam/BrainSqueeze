@@ -16,6 +16,8 @@ const {
   questionExists,
   deleteQuestion,
   insertQuizResults,
+  getSrbQuestions,
+  getEngQuestions,
 } = require("../services/questionService");
 
 const getAllQuestionsEndpoint = async (req, res) => {
@@ -30,7 +32,7 @@ const getAllQuestionsEndpoint = async (req, res) => {
     const questions = await getQuestions(limit, offset);
     const data = convertKeys(questions, "camel");
 
-    res.json({
+    res.status(200).json({
       page,
       limit,
       totalPages,
@@ -52,7 +54,7 @@ const getQuestionByIdEndpoint = async (req, res) => {
       });
     }
     const data = convertKeys([question], "camel");
-    res.json({ content: data[0] });
+    res.status(200).json({ content: data[0] });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error while retreiving data!" });
@@ -183,7 +185,6 @@ const insertQuizResultsEndpoint = async (req, res) => {
     }
 
     for (const [key, value] of map) {
-      console.log(key, value);
       await insertQuizResults(key, value.timesViewed, value.answeredCorrectly);
     }
 
@@ -198,6 +199,40 @@ const insertQuizResultsEndpoint = async (req, res) => {
   }
 };
 
+const getSrbQuestionsEndpoint = async (req, res) => {
+  try {
+    const totalCountResult = await totalQuestionsCount();
+    const totalQuestions = parseInt(totalCountResult.rows[0].count);
+    const questions = await getSrbQuestions();
+    const data = convertKeys(questions, "camel");
+
+    res.status(200).json({
+      totalQuestions,
+      content: data,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error while retreiving data!" });
+  }
+};
+
+const getEngQuestionsEndpoint = async (req, res) => {
+  try {
+    const totalCountResult = await totalQuestionsCount();
+    const totalQuestions = parseInt(totalCountResult.rows[0].count);
+    const questions = await getEngQuestions();
+    const data = convertKeys(questions, "camel");
+
+    res.status(200).json({
+      totalQuestions,
+      content: data,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error while retreiving data!" });
+  }
+};
+
 module.exports = {
   getAllQuestionsEndpoint,
   getQuestionByIdEndpoint,
@@ -205,4 +240,6 @@ module.exports = {
   updateQuestionEndpoint,
   deleteQuestionEndpoint,
   insertQuizResultsEndpoint,
+  getSrbQuestionsEndpoint,
+  getEngQuestionsEndpoint,
 };

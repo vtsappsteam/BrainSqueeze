@@ -26,7 +26,7 @@ const getQuestions = async (limit, offset) => {
     `SELECT q.id, question, correct_answer, times_viewed, answered_correctly, c.name as category_name, qd.name AS difficulty_name, qd.min_threshold, qd.max_threshold
         FROM ${tableNames.QUESTION_TABLE} AS q, ${tableNames.CATEGORY_TABLE} AS c, ${tableNames.DIFFICULTY_TABLE} AS qd
         WHERE q.category_id = c.id AND q.difficulty_id = qd.id
-        ORDER BY id LIMIT $1 OFFSET $2`,
+        ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
     [limit, offset]
   );
   const rows = questions.rows.map((row) => {
@@ -41,6 +41,26 @@ const getQuestions = async (limit, offset) => {
     };
   });
   return rows;
+};
+
+const getSrbQuestions = async () => {
+  const questions = await pool.query(
+    `SELECT q.id, question, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, c.name as category_name, qd.name AS difficulty_name
+        FROM ${tableNames.QUESTION_TABLE} AS q, ${tableNames.CATEGORY_TABLE} AS c, ${tableNames.DIFFICULTY_TABLE} AS qd
+        WHERE q.category_id = c.id AND q.difficulty_id = qd.id
+        ORDER BY created_at`
+  );
+  return questions.rows;
+};
+
+const getEngQuestions = async () => {
+  const questions = await pool.query(
+    `SELECT q.id, eng_question, eng_correct_answer, eng_wrong_answer_1, eng_wrong_answer_2, eng_wrong_answer_3, c.name as category_name, qd.name AS difficulty_name
+        FROM ${tableNames.QUESTION_TABLE} AS q, ${tableNames.CATEGORY_TABLE} AS c, ${tableNames.DIFFICULTY_TABLE} AS qd
+        WHERE q.category_id = c.id AND q.difficulty_id = qd.id
+        ORDER BY created_at`
+  );
+  return questions.rows;
 };
 
 const getQuestion = async (questionId) => {
@@ -71,8 +91,8 @@ const createQuestion = async (
   const query = `INSERT INTO ${tableNames.QUESTION_TABLE}
     (question, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3,
     eng_question, eng_correct_answer, eng_wrong_answer_1, eng_wrong_answer_2, eng_wrong_answer_3,
-       category_id, difficulty_id, times_viewed, answered_correctly)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`;
+       category_id, difficulty_id, times_viewed, answered_correctly, created_at)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`;
 
   const values = [
     question,
@@ -89,6 +109,7 @@ const createQuestion = async (
     difficultyId,
     timesViewed,
     answeredCorrectly,
+    new Date().toISOString(),
   ];
 
   await pool.query(query, values);
@@ -167,4 +188,6 @@ module.exports = {
   updateQuestion,
   deleteQuestion,
   insertQuizResults,
+  getSrbQuestions,
+  getEngQuestions,
 };

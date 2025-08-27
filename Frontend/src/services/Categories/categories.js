@@ -7,6 +7,13 @@ export const getAllCategories = async (param) => {
   return response.data;
 };
 
+export const getAllCategoriesWithDifficulties = async (param) => {
+  const response = await api.get(
+    `/categories/withDifficulties?page=${param.page}&limit=${param.limit}`
+  );
+  return response.data;
+};
+
 export const getCategoryById = async (id) => {
   const response = await api.get(`/categories/${id}`);
   return response.data;

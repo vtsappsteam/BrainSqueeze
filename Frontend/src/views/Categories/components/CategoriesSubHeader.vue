@@ -1,4 +1,5 @@
 <script setup>
+import PlusIcon from "@/assets/icons/plus.svg";
 const emit = defineEmits(["handle-add-new-category"]);
 
 const handleAddNewCategory = () => {
@@ -9,7 +10,8 @@ const handleAddNewCategory = () => {
 <template>
   <div class="header">
     <button class="header__btn-add" @click="handleAddNewCategory">
-      Nova kategorija +
+      Nova kategorija
+      <PlusIcon />
     </button>
   </div>
 </template>
@@ -28,6 +30,7 @@ const handleAddNewCategory = () => {
     color: #fff;
     border: none;
     border-radius: 4px;
+    opacity: 1;
     cursor: pointer;
   }
 }

@@ -14,9 +14,13 @@ const getCategory = async (categoryId) => {
 const categoryExists = async (categoryId) =>
   (await getCategory(categoryId)) === null ? false : true;
 
-const getCategories = async (limit, offset) => {
+const getCategories = async (filterName, limit, offset) => {
+  let filterQuery = "";
+  if (filterName) {
+    filterQuery += `WHERE name ILIKE '${filterName}%' OR eng_name ILIKE '${filterName}%' `;
+  }
   return await pool.query(
-    `SELECT * FROM ${tableNames.CATEGORY_TABLE} ORDER BY id LIMIT $1 OFFSET $2`,
+    `SELECT c.*, COUNT(*) OVER() as total_count FROM ${tableNames.CATEGORY_TABLE} AS c ${filterQuery} ORDER BY id LIMIT $1 OFFSET $2`,
     [limit, offset]
   );
 };

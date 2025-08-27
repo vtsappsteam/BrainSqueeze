@@ -1,4 +1,7 @@
 <script setup>
+import EditIcon from "@/assets/icons/edit.svg";
+import DeleteIcon from "@/assets/icons/delete.svg";
+
 const props = defineProps({
   users: {
     type: Array,
@@ -43,13 +46,13 @@ const handleDeleteExistingUser = (id) => {
               class="actions-container__btn-edit"
               @click="handleEditExistingUser(user.id)"
             >
-              Uredi
+              <EditIcon />
             </button>
             <button
               class="actions-container__btn-delete"
               @click="handleDeleteExistingUser(user.id)"
             >
-              Obriši
+              <DeleteIcon />
             </button>
           </td>
         </tr>

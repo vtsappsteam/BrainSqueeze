@@ -7,14 +7,19 @@ const {
   deleteQuestionEndpoint,
   updateQuestionEndpoint,
   insertQuizResultsEndpoint,
+  getSrbQuestionsEndpoint,
+  getEngQuestionsEndpoint,
 } = require("../controllers/questionController");
 const { validateQuestionRequest } = require("../middlewares/questionRules");
+const { authorize } = require("../middlewares/authorizationRules");
 
-router.get("/", getAllQuestionsEndpoint);
-router.get("/:id", getQuestionByIdEndpoint);
-router.post("/", validateQuestionRequest, createQuestionEndpoint);
-router.put("/:id", validateQuestionRequest, updateQuestionEndpoint);
-router.delete("/:id", deleteQuestionEndpoint);
-router.post("/quizResults", insertQuizResultsEndpoint);
+router.get("/", authorize, getAllQuestionsEndpoint);
+router.get("/srb", authorize, getSrbQuestionsEndpoint);
+router.get("/eng", authorize, getEngQuestionsEndpoint);
+router.get("/:id", authorize, getQuestionByIdEndpoint);
+router.post("/", authorize, validateQuestionRequest, createQuestionEndpoint);
+router.put("/:id", authorize, validateQuestionRequest, updateQuestionEndpoint);
+router.delete("/:id", authorize, deleteQuestionEndpoint);
+router.post("/quizResults", authorize, insertQuizResultsEndpoint);
 
 module.exports = router;

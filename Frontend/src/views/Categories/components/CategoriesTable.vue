@@ -1,4 +1,7 @@
 <script setup>
+import EditIcon from "@/assets/icons/edit.svg";
+import DeleteIcon from "@/assets/icons/delete.svg";
+
 const props = defineProps({
   categories: {
     type: Array,
@@ -37,23 +40,23 @@ const handleDeleteExistingCategory = (id) => {
       <tbody>
         <tr v-for="category in categories" :key="category.id">
           <td>{{ category.id }}</td>
-          <td>{{ category.name }}</td>
+          <td>{{ category.categoryName }}</td>
           <td>{{ category.totalQuestions }}</td>
-          <td>{{ category.totalEasyQuestions }}</td>
-          <td>{{ category.totalMediumQuestions }}</td>
-          <td>{{ category.totalHardQuestions }}</td>
+          <td>{{ category.totalQuestions1 }}</td>
+          <td>{{ category.totalQuestions2 }}</td>
+          <td>{{ category.totalQuestions3 }}</td>
           <td class="actions-container">
             <button
               class="actions-container__btn-edit"
               @click="handleEditExistingCategory(category.id)"
             >
-              Uredi
+              <EditIcon />
             </button>
             <button
               class="actions-container__btn-delete"
               @click="handleDeleteExistingCategory(category.id)"
             >
-              Obriši
+              <DeleteIcon />
             </button>
           </td>
         </tr>
