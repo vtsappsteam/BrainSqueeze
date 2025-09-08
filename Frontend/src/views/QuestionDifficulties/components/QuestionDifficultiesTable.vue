@@ -24,120 +24,119 @@ const handleDeleteExistingQuestionDifficulty = (id) => {
 </script>
 
 <template>
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Br.</th>
-          <th>Težina</th>
-          <th>Prag tačnih odgovora</th>
-          <th>Br. pitanja</th>
-          <th class="actions">Akcije</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="questionDifficulty in questionDifficulties"
-          :key="questionDifficulty.id"
-        >
-          <td>{{ questionDifficulty.id }}</td>
-          <td>{{ questionDifficulty.name }}</td>
-          <td>
-            {{ questionDifficulty?.minThreshold ?? "" }}-{{
-              questionDifficulty?.maxThreshold ?? ""
-            }}%
-          </td>
-          <td>{{ questionDifficulty.totalQuestions }}</td>
-          <td class="actions-container">
-            <button
-              class="actions-container__btn-edit"
-              @click="
-                handleEditExistingQuestionDifficulty(questionDifficulty.id)
-              "
-            >
-              <EditIcon />
-            </button>
-            <button
-              class="actions-container__btn-delete"
-              @click="
-                handleDeleteExistingQuestionDifficulty(questionDifficulty.id)
-              "
-            >
-              <DeleteIcon />
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="section-container">
+    <div class="table-container">
+      <div class="section-header"></div>
+      <table class="section-table">
+        <thead>
+          <tr>
+            <th>Br.</th>
+            <th>Težina</th>
+            <th>Prag tačnih odgovora</th>
+            <th>Br. pitanja</th>
+            <th>Akcije</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="questionDifficulty in questionDifficulties"
+            :key="questionDifficulty.id"
+          >
+            <td>{{ questionDifficulty.id }}</td>
+            <td>
+              <span
+                class="dot"
+                :class="{
+                  'dot dot-green': questionDifficulty.name === 'Lako',
+                  'dot dot-yellow': questionDifficulty.name === 'Srednje',
+                  'dot dot-red': questionDifficulty.name === 'Teško',
+                }"
+              ></span
+              >{{ questionDifficulty.name }}
+            </td>
+            <td>
+              {{ questionDifficulty?.minThreshold ?? "" }}-{{
+                questionDifficulty?.maxThreshold ?? ""
+              }}%
+            </td>
+            <td>{{ questionDifficulty.totalQuestions }}</td>
+            <td class="actions-cell">
+              <div class="actions-container">
+                <button
+                  type="button"
+                  class="actions-container__btn-edit"
+                  @click="
+                    handleEditExistingQuestionDifficulty(questionDifficulty.id)
+                  "
+                >
+                  <EditIcon />
+                </button>
+                <button
+                  disabled
+                  type="button"
+                  class="actions-container__btn-delete disabled"
+                  @click="
+                    handleDeleteExistingQuestionDifficulty(
+                      questionDifficulty.id
+                    )
+                  "
+                >
+                  <DeleteIcon />
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .table-container {
-  padding: 0.5rem;
+  max-height: 620px;
+  overflow-y: auto;
+}
+.section-table {
+  width: 100%;
+  border-collapse: collapse;
+}
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #fff;
+.section-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border: 1px solid #e9ecef;
+}
 
-    thead {
-      background-color: #f9fafb;
-      text-align: left;
-      font-size: 0.85rem;
-      color: #4b5563;
-    }
+.section-table td.wrong-category-cell {
+  text-align: center;
+}
 
-    th,
-    td {
-      padding: 0.75rem 1rem;
-      font-size: 0.9rem;
-      vertical-align: middle;
-      border: 1px solid #e5e7eb;
-    }
+.wrong-category-cell span {
+  font-size: 25px;
+}
 
-    th {
-      font-weight: 600;
-    }
+.section-table thead th {
+  position: sticky;
+  top: 0;
+  background: #f6f7fa;
+  font-weight: bold;
+  z-index: 2;
+  border: #e9ecef 1px solid;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  white-space: nowrap;
+}
 
-    tbody tr {
-      transition: background-color 0.2s ease-in-out;
+.difficulty-cell {
+  min-width: 110px;
+}
 
-      &:hover {
-        background-color: #f3f4f6;
-      }
-    }
+.actions-cell {
+  width: 105px;
+}
 
-    td {
-      color: #374151;
-    }
-
-    .actions {
-      text-align: center;
-      &-container {
-        padding: 0.5rem 0;
-        text-align: center;
-        white-space: nowrap;
-
-        &__btn-edit,
-        &__btn-delete {
-          padding: 0.5rem 1rem;
-          background-color: #2c9dff;
-          color: #fff;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-        }
-
-        &__btn-edit {
-          margin-right: 0.5rem;
-        }
-
-        &__btn-delete {
-          background-color: #ff5252;
-        }
-      }
-    }
-  }
+.disabled {
+  cursor: not-allowed;
 }
 </style>

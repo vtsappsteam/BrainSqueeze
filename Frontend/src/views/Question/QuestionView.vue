@@ -11,6 +11,8 @@ import {
   getQuestionById,
   updateQuestion,
 } from "../../services/Questions/questions";
+import Vue3Select from "vue3-select";
+import "vue3-select/dist/vue3-select.css";
 
 const route = useRoute();
 const router = useRouter();
@@ -33,8 +35,6 @@ const engCorrectAnswerInput = ref("");
 const engWrongAnswer1Input = ref("");
 const engWrongAnswer2Input = ref("");
 const engWrongAnswer3Input = ref("");
-
-const quillRef = ref(null);
 
 const fetchCategories = async () => {
   try {
@@ -61,7 +61,6 @@ const fetchQuestionDifficulties = async () => {
 };
 
 const fetchQuestion = async (id) => {
-  console.log(questionModel.value);
   const response = await getQuestionById(id);
   const data = response.content;
   question.value = data.question || "";
@@ -69,8 +68,10 @@ const fetchQuestion = async (id) => {
   wrongAnswer1Input.value = data.wrongAnswer1;
   wrongAnswer2Input.value = data.wrongAnswer2;
   wrongAnswer3Input.value = data.wrongAnswer3;
-  selectedCategory.value = data.categoryId;
-  selectedDifficulty.value = data.difficultyId;
+  selectedCategory.value =
+    categories.value.find((cat) => cat.id === data.categoryId) || null;
+  selectedDifficulty.value =
+    difficulties.value.find((diff) => diff.id === data.difficultyId) || null;
   engQuestion.value = data.engQuestion || "";
   engCorrectAnswerInput.value = data.engCorrectAnswer;
   engWrongAnswer1Input.value = data.engWrongAnswer1;
@@ -79,9 +80,13 @@ const fetchQuestion = async (id) => {
 };
 
 const handleSaveQuestion = async () => {
+  if (!selectedCategory.value || !selectedDifficulty.value) {
+    alert("Morate izabrati kategoriju i težinu pitanja.");
+    return;
+  }
   const payload = {
-    categoryId: selectedCategory.value,
-    questionDifficultyId: selectedDifficulty.value,
+    categoryId: selectedCategory.value.id,
+    questionDifficultyId: selectedDifficulty.value.id,
     question: question.value,
     correctAnswer: correctAnswerInput.value,
     wrongAnswer1: wrongAnswer1Input.value,
@@ -101,7 +106,9 @@ const handleSaveQuestion = async () => {
     }
     router.push("/questions");
   } catch (error) {
-    console.error(error, payload);
+    alert(
+      error.response?.data?.error || error.message || "Došlo je do greške."
+    );
   }
 };
 
@@ -135,201 +142,230 @@ onMounted(() => {
     @handle-save-question="handleSaveQuestion"
     @handle-go-back="handleGoBack"
   />
-  <div>
-    <div>
-      <button
-        id="srbButton"
-        :class="{ active: selectedLanguage === 'sr' }"
-        @click="selectedLanguage = 'sr'"
-      >
-        SRPSKI
-      </button>
-      <button
-        id="engButton"
-        :class="{ active: selectedLanguage === 'en' }"
-        @click="selectedLanguage = 'en'"
-      >
-        ENGLESKI
-      </button>
-    </div>
-    <label :for="selectedLanguage === 'sr' ? 'question' : 'engQuestion'">
-      {{ selectedLanguage === "sr" ? "Pitanje" : "Question" }}
-    </label>
+  <div class="language-buttons-bar">
+    <p
+      :class="{ active: selectedLanguage === 'sr' }"
+      @click="selectedLanguage = 'sr'"
+    >
+      SRPSKI
+    </p>
+    <p
+      :class="{ active: selectedLanguage === 'en' }"
+      @click="selectedLanguage = 'en'"
+    >
+      ENGLESKI
+    </p>
+  </div>
 
-    <div id="serbianDropdownForm" v-if="selectedLanguage === 'sr'" class="app">
-      <div>
-        <label for="category">Kategorija</label>
-        <select id="category" v-model="selectedCategory">
-          <option
-            v-for="category in categories"
-            :key="category.id"
-            :value="category.id"
-          >
-            {{ category.name }}
-          </option>
-        </select>
+  <div class="section-container">
+    <div class="input-form">
+      <div
+        id="serbianDropdownForm"
+        v-if="selectedLanguage === 'sr'"
+        class="select-row"
+      >
+        <div>
+          <label for="category">Kategorija</label>
+          <Vue3Select
+            id="category"
+            v-model="selectedCategory"
+            :options="categories"
+            label="name"
+            value-by="id"
+            placeholder="Kategorija"
+            class="category-select"
+          />
+        </div>
+        <div>
+          <label for="difficulty">Težina</label>
+          <Vue3Select
+            id="difficulty"
+            v-model="selectedDifficulty"
+            :options="difficulties"
+            label="name"
+            value-by="id"
+            placeholder="Težina"
+            class="difficulty-select"
+          />
+        </div>
       </div>
-      <div>
-        <label for="difficulty">Težina</label>
-        <select id="difficulty" v-model="selectedDifficulty">
-          <option
-            v-for="difficulty in difficulties"
-            :key="difficulty.id"
-            :value="difficulty.id"
-          >
-            {{ difficulty.name }}
-          </option>
-        </select>
+      <div
+        id="englishDropdownForm"
+        v-if="selectedLanguage === 'en'"
+        class="select-row"
+      >
+        <div>
+          <label for="category">Category</label>
+          <Vue3Select
+            id="category"
+            v-model="selectedCategory"
+            :options="categories"
+            :get-option-label="(option) => option.engName"
+            :get-option-value="(option) => option.id"
+            placeholder="Category"
+            :disabled="true"
+            class="category-select"
+          />
+        </div>
+        <div>
+          <label for="difficulty">Difficulty</label>
+          <Vue3Select
+            id="difficulty"
+            v-model="selectedDifficulty"
+            :options="difficulties"
+            :get-option-label="(option) => option.engName"
+            :get-option-value="(option) => option.id"
+            placeholder="Difficulty"
+            :disabled="true"
+            class="difficulty-select"
+          />
+        </div>
       </div>
-    </div>
-    <div id="englishDropdownForm" v-if="selectedLanguage === 'en'" class="app">
+      <label :for="selectedLanguage === 'sr' ? 'question' : 'engQuestion'">
+        {{ selectedLanguage === "sr" ? "Pitanje" : "Question" }}
+      </label>
       <div>
-        <label for="category">Category</label>
-        <select id="category" :value="selectedCategory" disabled>
-          <option v-if="selectedCategory" :value="selectedCategory">
-            {{
-              categories.find((cat) => cat.id === selectedCategory)?.engName ||
-              ""
-            }}
-          </option>
-        </select>
+        <QuillEditor
+          v-model:content="questionModel"
+          content-type="html"
+          :key="selectedLanguage"
+          :toolbar="[
+            ['bold', 'italic'],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            ['link'],
+          ]"
+          :placeholder="
+            selectedLanguage === 'sr'
+              ? 'Unesite vaše pitanje...'
+              : 'Enter the question...'
+          "
+          style="height: 150px"
+        />
       </div>
-      <div>
-        <label for="difficulty">Difficulty</label>
-        <select id="difficulty" :value="selectedDifficulty" disabled>
-          <option v-if="selectedDifficulty" :value="selectedDifficulty">
-            {{
-              difficulties.find((diff) => diff.id === selectedDifficulty)
-                ?.engName || ""
-            }}
-          </option>
-        </select>
-      </div>
-    </div>
-    <QuillEditor
-      v-model:content="questionModel"
-      content-type="html"
-      :key="selectedLanguage"
-      :toolbar="[
-        ['bold', 'italic'],
-        [{ list: 'ordered' }, { list: 'bullet' }],
-        ['link'],
-      ]"
-      :placeholder="
-        selectedLanguage === 'sr'
-          ? 'Unesite vaše pitanje...'
-          : 'Enter the question...'
-      "
-      style="height: 150px"
-    />
-    <div>
       <div id="serbianForm" v-if="selectedLanguage === 'sr'" class="app">
-        <div>
-          <div>
-            <div>
-              <label for="correctAnswerInput"> Tačan odgovor </label>
-              <input
-                id="correctAnswerInput"
-                v-model="correctAnswerInput"
-                type="text"
-                class="correctAnswerInput"
-                placeholder="Unesite tačan odgovor"
-              />
-            </div>
-
-            <div>
-              <label for="wrongAnswer1Input"> Netačan odgovor 1 </label>
-              <input
-                id="wrongAnswer1Input"
-                v-model="wrongAnswer1Input"
-                type="text"
-                class="wrongAnswer1Input"
-                placeholder="Unesite netačan odgovor 1"
-              />
-            </div>
+        <div class="inputs-row">
+          <div class="form-group">
+            <label for="correctAnswerInput"
+              ><span>✅</span> Tačan odgovor
+            </label>
+            <input
+              id="correctAnswerInput"
+              v-model="correctAnswerInput"
+              type="text"
+              placeholder="Unesite tačan odgovor"
+            />
           </div>
+          <div class="form-group">
+            <label for="wrongAnswer1Input">
+              <span>❌</span> Netačan odgovor 1
+            </label>
+            <input
+              id="wrongAnswer1Input"
+              v-model="wrongAnswer1Input"
+              type="text"
+              placeholder="Unesite netačan odgovor 1"
+            />
+          </div>
+        </div>
 
-          <div>
-            <div>
-              <label for="wrongAnswer2Input"> Netačan odgovor 2 </label>
-              <input
-                id="wrongAnswer2Input"
-                v-model="wrongAnswer2Input"
-                type="text"
-                class="wrongAnswer2Input"
-                placeholder="Unesite netačan odgovor 2"
-              />
-            </div>
-
-            <div>
-              <label for="wrongAnswer3Input"> Netačan odgovor 3 </label>
-              <input
-                id="wrongAnswer3Input"
-                v-model="wrongAnswer3Input"
-                type="text"
-                class="wrongAnswer3Input"
-                placeholder="Unesite netačan odgovor 3"
-              />
-            </div>
+        <div class="inputs-row">
+          <div class="form-group">
+            <label for="wrongAnswer2Input">
+              <span>❌</span> Netačan odgovor 2
+            </label>
+            <input
+              id="wrongAnswer2Input"
+              v-model="wrongAnswer2Input"
+              type="text"
+              placeholder="Unesite netačan odgovor 2"
+            />
+          </div>
+          <div class="form-group">
+            <label for="wrongAnswer3Input">
+              <span>❌</span> Netačan odgovor 3
+            </label>
+            <input
+              id="wrongAnswer3Input"
+              v-model="wrongAnswer3Input"
+              type="text"
+              placeholder="Unesite netačan odgovor 3"
+            />
           </div>
         </div>
       </div>
-    </div>
-    <div id="englishForm" v-if="selectedLanguage === 'en'" class="app">
-      <div>
-        <div>
-          <label for="engCorrectAnswerInput"> Correct answer </label>
-          <input
-            id="engCorrectAnswerInput"
-            v-model="engCorrectAnswerInput"
-            type="text"
-            class="engCorrectAnswerInput"
-            placeholder="Enter correct answer"
-          />
+      <div id="englishForm" v-if="selectedLanguage === 'en'" class="app">
+        <div class="inputs-row">
+          <div class="form-group">
+            <label for="engCorrectAnswerInput">
+              <span>✅</span> Correct answer
+            </label>
+            <input
+              id="engCorrectAnswerInput"
+              v-model="engCorrectAnswerInput"
+              type="text"
+              placeholder="Enter correct answer"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="engWrongAnswer1Input">
+              <span>❌</span> Wrong answer 1
+            </label>
+            <input
+              id="engWrongAnswer1Input"
+              v-model="engWrongAnswer1Input"
+              type="text"
+              placeholder="Enter wrong answer 1"
+            />
+          </div>
         </div>
 
-        <div>
-          <label for="engWrongAnswer1Input"> Wrong answer 1 </label>
-          <input
-            id="engWrongAnswer1Input"
-            v-model="engWrongAnswer1Input"
-            type="text"
-            class="engWrongAnswer1Input"
-            placeholder="Enter wrong answer 1"
-          />
-        </div>
-      </div>
+        <div class="inputs-row">
+          <div class="form-group">
+            <label for="engWrongAnswer2Input"
+              ><span>❌</span> Wrong answer 2
+            </label>
+            <input
+              id="engWrongAnswer2Input"
+              v-model="engWrongAnswer2Input"
+              type="text"
+              placeholder="Enter wrong answer 2"
+            />
+          </div>
 
-      <div>
-        <div>
-          <label for="engWrongAnswer2Input"> Wrong answer 2 </label>
-          <input
-            id="engWrongAnswer2Input"
-            v-model="engWrongAnswer2Input"
-            type="text"
-            class="engWrongAnswer2Input"
-            placeholder="Enter wrong answer 2"
-          />
-        </div>
-
-        <div>
-          <label for="engWrongAnswer3Input"> Wrong answer 3 </label>
-          <input
-            id="engWrongAnswer3Input"
-            v-model="engWrongAnswer3Input"
-            type="text"
-            class="engWrongAnswer3Input"
-            placeholder="Enter wrong answer 3"
-          />
+          <div class="form-group">
+            <label for="engWrongAnswer3Input"
+              ><span>❌</span> Wrong answer 3
+            </label>
+            <input
+              id="engWrongAnswer3Input"
+              v-model="engWrongAnswer3Input"
+              type="text"
+              placeholder="Enter wrong answer 3"
+            />
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<style>
+<style scoped>
 .active {
   background: #1976d2;
-  color: #fff;
+  font-weight: bold;
+  font-family: "DMSans", sans-serif;
+  background-color: #fff;
+  color: #2c9dff;
+  border: none;
+  letter-spacing: -0.32px;
+}
+
+.select-row {
+  display: flex;
+  gap: 13px;
+  padding: 14px 0;
+  justify-content: flex-start;
+  width: 100%;
 }
 </style>

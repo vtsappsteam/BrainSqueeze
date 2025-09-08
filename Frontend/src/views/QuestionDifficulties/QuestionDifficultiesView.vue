@@ -22,11 +22,11 @@ const fetchQuestionDifficulties = async () => {
 };
 
 const handleAddNewQuestionDifficulty = () => {
-  route.push("/question-difficulty");
+  route.push("/difficulty");
 };
 
 const handleEditExistingQuestionDifficulty = (id) => {
-  route.push({ path: "/question-difficulty", query: { id } });
+  route.push({ path: "/difficulty", query: { id } });
 };
 
 const handleDeleteExistingQuestionDifficulty = async (id) => {
@@ -37,7 +37,6 @@ const handleDeleteExistingQuestionDifficulty = async (id) => {
   ) {
     try {
       await deleteQuestionDifficulty(id);
-      console.log(`Delete question difficulty with id: ${id}`);
       await fetchQuestionDifficulties();
     } catch (error) {
       console.error("Error deleting question difficulty:", error);

@@ -1,4 +1,5 @@
 const { convertKeys } = require("../helpers/helpers");
+const { categorySortKeys, allowedOrders } = require("../helpers/sortKeys");
 const {
   getCategories,
   getCategory,
@@ -15,8 +16,18 @@ const getAllCategoriesEndpoint = async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
   const filterName = req.query.filterName || null;
+  const sortBy = "name";
+  const order = "asc";
+
   try {
-    const categories = await getCategories(filterName, limit, offset);
+    console.log(sortBy, order);
+    const categories = await getCategories(
+      filterName,
+      limit,
+      offset,
+      sortBy,
+      order
+    );
     const totalCount =
       categories.rows.length > 0 ? parseInt(categories.rows[0].total_count) : 0;
     const totalPages = Math.ceil(totalCount / limit);
@@ -40,8 +51,22 @@ const getAllCategoriesWithDifficultiesEndpoint = async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
   const filterName = req.query.filterName || null;
+  const sortBy = req.query.sortBy;
+  const order = req.query.order || "asc";
+  if (
+    sortBy &&
+    (!categorySortKeys.includes(sortBy) || !allowedOrders.includes(order))
+  ) {
+    return res.status(400).json({ error: "Invalid sort parameters!" });
+  }
   try {
-    const categories = await getCategories(filterName, limit, offset);
+    const categories = await getCategories(
+      filterName,
+      limit,
+      offset,
+      sortBy,
+      order
+    );
     const totalCount =
       categories.rows.length > 0 ? parseInt(categories.rows[0].total_count) : 0;
     const totalPages = Math.ceil(totalCount / limit);
@@ -54,13 +79,41 @@ const getAllCategoriesWithDifficultiesEndpoint = async (req, res) => {
         id: category.id,
         categoryName: category.name,
         totalQuestions: category.total_questions,
-        totalQuestions1:
+        totalQuestionsEasy:
           difficultyResults.rows?.find((x) => x.id === "1")?.total ?? "0",
-        totalQuestions2:
+        totalQuestionsMedium:
           difficultyResults.rows?.find((x) => x.id === "2")?.total ?? "0",
-        totalQuestions3:
+        totalQuestionsHard:
           difficultyResults.rows?.find((x) => x.id === "3")?.total ?? "0",
       });
+
+      if (sortBy === "totalQuestionsEasy") {
+        transformedData.sort((a, b) => {
+          if (order === "asc") {
+            return a.totalQuestionsEasy - b.totalQuestionsEasy;
+          } else {
+            return b.totalQuestionsEasy - a.totalQuestionsEasy;
+          }
+        });
+      }
+      if (sortBy === "totalQuestionsMedium") {
+        transformedData.sort((a, b) => {
+          if (order === "asc") {
+            return a.totalQuestionsMedium - b.totalQuestionsMedium;
+          } else {
+            return b.totalQuestionsMedium - a.totalQuestionsMedium;
+          }
+        });
+      }
+      if (sortBy === "totalQuestionsHard") {
+        transformedData.sort((a, b) => {
+          if (order === "asc") {
+            return a.totalQuestionsHard - b.totalQuestionsHard;
+          } else {
+            return b.totalQuestionsHard - a.totalQuestionsHard;
+          }
+        });
+      }
     }
 
     res.json({

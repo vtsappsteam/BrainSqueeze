@@ -10,6 +10,7 @@ const limit = ref(100);
 const page = ref(1);
 const totalPages = ref(1);
 const router = useRouter();
+const filterName = ref("");
 
 const fetchUsers = async () => {
   try {
@@ -38,7 +39,6 @@ const handleDeleteExistingUser = async (id) => {
   ) {
     try {
       await deleteUser(id);
-      console.log(`Delete user with id: ${id}`);
       await fetchUsers();
     } catch (error) {
       console.error("Error deleting user:", error);
@@ -50,6 +50,21 @@ const goToPage = (p) => {
   if (p >= 1 && p <= totalPages.value) {
     page.value = p;
     fetchUsers();
+  }
+};
+
+const handleSearch = async (filterName) => {
+  try {
+    const response = await getAllUsers({
+      page: page.value,
+      limit: limit.value,
+      filterName: filterName,
+    });
+    users.value = response.content;
+    totalPages.value = response.totalPages;
+    filterName = "";
+  } catch (error) {
+    console.error(error);
   }
 };
 
@@ -65,60 +80,7 @@ onMounted(() => {
       :users="users"
       @handle-edit-existing-user="handleEditExistingUser"
       @handle-delete-existing-user="handleDeleteExistingUser"
+      @handle-search-user="handleSearch"
     />
-    <div class="pagination">
-      <button
-        class="pagination-btn"
-        :disabled="page === 1"
-        @click="goToPage(page - 1)"
-      >
-        &laquo;
-      </button>
-      <button
-        v-for="p in totalPages"
-        :key="p"
-        class="pagination-btn"
-        :class="{ active: page === p }"
-        @click="goToPage(p)"
-      >
-        {{ p }}
-      </button>
-      <button
-        class="pagination-btn"
-        :disabled="page === totalPages"
-        @click="goToPage(page + 1)"
-      >
-        &raquo;
-      </button>
-    </div>
   </div>
 </template>
-
-<style scoped>
-.pagination {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin: 2rem 0;
-}
-.pagination-btn {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  font-size: 1rem;
-  min-width: 40px;
-  transition: background 0.2s;
-}
-.pagination-btn.active {
-  background: #e6eeef;
-  font-weight: bold;
-  color: #1a2a32;
-  border-color: #e6eeef;
-}
-.pagination-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-</style>

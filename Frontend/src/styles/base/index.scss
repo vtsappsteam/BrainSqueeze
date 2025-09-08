@@ -19,3 +19,464 @@ body {
   width: 100vw;
   font-family: "DMSans", sans-serif;
 }
+
+button {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+input {
+  padding: 0 20px;
+  border: 1px solid #e3ecf3;
+  font-size: 14px;
+  letter-spacing: -0.26px;
+  color: #132038;
+  opacity: 1;
+  height: 40px;
+}
+
+button {
+  cursor: pointer;
+}
+
+.v-select {
+  width: 180px;
+}
+
+.v-select .vs__dropdown-toggle {
+  border-radius: 6px;
+  border: 1px solid #e3ecf3;
+  height: 40px;
+  color: #132038;
+  background-color: #fff;
+  font-size: 14px;
+}
+
+.v-select .vs__dropdown-menu li {
+  font-size: 14px;
+}
+.v-select .vs__dropdown-option--highlight {
+  background-color: #dcebee;
+  color: #132038;
+}
+
+.v-select input {
+  font-size: 14px;
+}
+.main-header {
+  background-color: #fff;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  &__user {
+    margin-right: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+  }
+
+  &__username {
+    color: #164d7d;
+    font-size: 14px;
+  }
+
+  &__avatar-wrapper {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    background: #1d90a8;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+  }
+
+  &__avatar-text {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  &__dropdown {
+    position: absolute;
+    top: 2.5rem;
+    right: 0;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    padding: 0.5rem 0;
+    min-width: 140px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__dropdown button {
+    background: none;
+    border: none;
+    padding: 0.5rem 1rem;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #164d7d;
+
+    &:hover {
+      background: #f6f7fa;
+    }
+  }
+}
+
+.section-container {
+  position: relative;
+  padding: 20px 20px 20px 20px;
+  background-color: #fff;
+}
+
+.page-subheader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: #fff;
+  padding: 18px 21px 18px 0;
+  border-bottom: 1px solid #e6e7eb;
+  gap: 10px;
+
+  &__btn-add {
+    padding: 0.5rem 1rem;
+    background: #1d90a8;
+    color: #fff;
+    fill: #fff;
+    border: none;
+    border-radius: 4px;
+    opacity: 1;
+    cursor: pointer;
+    height: 36px;
+
+    .btn-icon {
+      vertical-align: middle;
+      margin-bottom: 1px;
+      margin-left: 8px;
+    }
+  }
+  &__btn-import {
+    padding: 9px 19px;
+    background: #dcebee;
+    color: #00354b;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 110.19px;
+    height: 36px;
+
+    .btn-icon {
+      vertical-align: middle;
+      margin-bottom: 1px;
+      margin-left: 8px;
+    }
+  }
+  &__btn-export {
+    padding: 9px 19px;
+    background: #dcebee;
+    color: #00354b;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 110.19px;
+    height: 36px;
+
+    .btn-icon {
+      vertical-align: middle;
+      margin-bottom: 1px;
+      margin-left: 8px;
+    }
+  }
+
+  &__btn-back {
+    width: 36px;
+    height: 36px;
+    fill: #fff;
+    border: none;
+    margin-left: 23px;
+    background: #1d90a8;
+    border-radius: 6px;
+    cursor: pointer;
+
+    .btn-icon {
+      vertical-align: middle;
+      margin-bottom: 1px;
+    }
+  }
+
+  &__btn-save {
+    padding: 0.5rem 1rem;
+    background: #1d90a8 0% 0% no-repeat padding-box;
+    color: #fff;
+    fill: #fff;
+    border: none;
+    border-radius: 4px;
+    opacity: 1;
+    cursor: pointer;
+    height: 36px;
+
+    .btn-icon {
+      vertical-align: middle;
+      margin-bottom: 1px;
+      margin-left: 8px;
+    }
+  }
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 20px 20px;
+  position: relative;
+  gap: 15px;
+  background-color: #f6f7fa;
+  border-left: #e9ecef 1px solid;
+  border-right: #e9ecef 1px solid;
+  border-top: #e9ecef 1px solid;
+  border-bottom: none;
+}
+
+.search-input {
+  width: 220px;
+  border-radius: 6px;
+}
+
+.number-input {
+  padding: 0 10px;
+  width: 140px;
+  border-radius: 6px;
+}
+
+.percentage-input {
+  padding: 0 10px;
+  width: 100px;
+  border-radius: 6px;
+}
+
+.search-btn {
+  background: #1d90a8;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 2rem;
+  font-size: 1rem;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.actions-container {
+  white-space: nowrap;
+  padding: 0 9px;
+
+  &__btn-edit {
+    background-color: #eef0f8 0% 0% no-repeat padding-box;
+    border: 1px solid #e1e4e8;
+    opacity: 1;
+    width: 25px;
+    height: 25px;
+    fill: #2c9dff;
+  }
+
+  &__btn-delete {
+    background: #ffe8e8 0% 0% no-repeat padding-box;
+    border: 1px solid #ffbfbf;
+    opacity: 1;
+    width: 25px;
+    height: 25px;
+    fill: #ff5252;
+    margin-left: 5px;
+  }
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.dot-blue {
+  background: #3ec3f7;
+}
+.dot-green {
+  background: #2ecc40;
+}
+.dot-yellow {
+  background: #f7c948;
+}
+.dot-red {
+  background: #e74c3c;
+}
+
+.sort-icon {
+  font-size: 8px;
+  padding-bottom: 2px;
+}
+
+.reset-all-filters-btn {
+  background-color: #1d90a8;
+  fill: #fff;
+  align-items: center;
+  opacity: 1;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.dropdown-filters {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.language-buttons-bar {
+  display: flex;
+  gap: 30.5px;
+  display: flex;
+  vertical-align: middle;
+  justify-content: flex-start;
+  background-color: #fff;
+  padding: 18px 21px 18px 21.5px;
+  border-bottom: 1px solid #e6e7eb;
+  cursor: pointer;
+}
+
+.input-form {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  background: #fff;
+  border-radius: 0;
+  padding-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 4px;
+  flex: 0 0 auto;
+  flex: 1;
+}
+
+.form-group-input {
+  width: 50vw;
+  min-width: 0;
+}
+
+.inputs-row {
+  display: flex;
+  gap: 18px;
+  padding: 14px 0;
+}
+
+.inputs-column {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  flex: 1;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.pagination {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+  margin: 2rem 0;
+}
+.pagination-btn {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 13px;
+  min-width: 47px;
+  height: 40px;
+  transition: background 0.2s;
+}
+.pagination-btn.active {
+  background: #dcebee;
+  font-weight: bold;
+  color: #1a2a32;
+  border-color: #e6eeef;
+}
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.login-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #edeff7;
+}
+
+.login-container,
+.change-password-container {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 24px;
+  border: 1px solid #e9ecef;
+  background: #fff;
+}
+.login-logo,
+.change-password-container h2 {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.login-container form > div,
+.change-password-container form > div {
+  margin-bottom: 16px;
+}
+.login-container label,
+.change-password-container label {
+  display: block;
+  margin-bottom: 6px;
+  font-family: "DM Sans", sans-serif;
+}
+.login-container input,
+.change-password-container input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border-radius: 6px;
+}
+.login-container button,
+.change-password-container button {
+  width: 100%;
+  padding: 10px;
+  background: #1d90a8;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.login-container button:hover,
+.change-password-container button:hover {
+  background: #1d90a8;
+  opacity: 0.8;
+}

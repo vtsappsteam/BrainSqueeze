@@ -1,8 +1,42 @@
 const pool = require("../db");
 const { tableNames } = require("../db/tableNames");
+const format = require("pg-format");
 
 const totalQuestionsCount = async () => {
   return await pool.query(`SELECT COUNT(*) FROM ${tableNames.QUESTION_TABLE}`);
+};
+
+const addFilters = (filters) => {
+  let filterQuery = "";
+  if (filters) {
+    if (filters.categoryId) {
+      filterQuery += ` AND q.category_id = ${filters.categoryId} `;
+    }
+    if (filters.difficultyId) {
+      filterQuery += ` AND q.difficulty_id = ${filters.difficultyId} `;
+    }
+    if (filters.question) {
+      filterQuery += ` AND (q.question ILIKE '%${filters.question}%' OR q.eng_question ILIKE '%${filters.question}%') `;
+    }
+    if (filters.timesViewedMin || filters.timesViewedMax) {
+      const min = filters.timesViewedMin ? filters.timesViewedMin : 0;
+      const max = filters.timesViewedMax ? filters.timesViewedMax : 1000000;
+      filterQuery += ` AND q.times_viewed >= ${min} AND q.times_viewed <= ${max} `;
+    }
+    if (
+      filters.percentAnsweredCorrectlyMin ||
+      filters.percentAnsweredCorrectlyMax
+    ) {
+      const min = filters.percentAnsweredCorrectlyMin
+        ? filters.percentAnsweredCorrectlyMin
+        : 0;
+      const max = filters.percentAnsweredCorrectlyMax
+        ? filters.percentAnsweredCorrectlyMax
+        : 100;
+      filterQuery += ` AND (CASE WHEN q.times_viewed = 0 THEN 0 ELSE (q.answered_correctly::float / q.times_viewed::float) * 100 END) >= ${min} AND (CASE WHEN q.times_viewed = 0 THEN 0 ELSE (q.answered_correctly::float / q.times_viewed::float) * 100 END) <= ${max} `;
+    }
+  }
+  return filterQuery;
 };
 
 const calculateWrongCategory = (
@@ -21,14 +55,68 @@ const calculateWrongCategory = (
   );
 };
 
-const getQuestions = async (limit, offset) => {
-  const questions = await pool.query(
-    `SELECT q.id, question, correct_answer, times_viewed, answered_correctly, c.name as category_name, qd.name AS difficulty_name, qd.min_threshold, qd.max_threshold
-        FROM ${tableNames.QUESTION_TABLE} AS q, ${tableNames.CATEGORY_TABLE} AS c, ${tableNames.DIFFICULTY_TABLE} AS qd
-        WHERE q.category_id = c.id AND q.difficulty_id = qd.id
-        ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
-    [limit, offset]
-  );
+const getRawQuestions = async (filters) => {
+  let filterQuery = `SELECT 
+  question,
+  correct_answer, 
+  wrong_answer_1,
+  wrong_answer_2,
+  wrong_answer_3,
+  c.name as category_name,
+  c.eng_name as category_eng_name,
+  qd.name as difficulty_name,
+  qd.eng_name as difficulty_eng_name,
+  eng_question,
+  eng_correct_answer,
+  eng_wrong_answer_1,
+  eng_wrong_answer_2,
+  eng_wrong_answer_3
+  FROM ${tableNames.QUESTION_TABLE} AS q, ${tableNames.CATEGORY_TABLE} AS c, ${tableNames.DIFFICULTY_TABLE} AS qd
+  WHERE q.category_id = c.id AND q.difficulty_id = qd.id`;
+
+  filterQuery += addFilters(filters);
+  filterQuery += ` ORDER BY q.created_at DESC`;
+  const questions = await pool.query(filterQuery);
+  return questions.rows;
+};
+
+const getQuestions = async (
+  limit,
+  offset,
+  filters,
+  sortBy = "created_at",
+  order = "desc"
+) => {
+  let filterQuery = `SELECT q.id, question, correct_answer, times_viewed, answered_correctly, c.name as category_name, qd.name AS difficulty_name, qd.min_threshold, qd.max_threshold, COUNT(*) OVER() as total_count
+  FROM ${tableNames.QUESTION_TABLE} AS q, ${tableNames.CATEGORY_TABLE} AS c, ${tableNames.DIFFICULTY_TABLE} AS qd
+  WHERE q.category_id = c.id AND q.difficulty_id = qd.id`;
+
+  let sortByMap = sortBy;
+  switch (sortBy) {
+    case "id":
+      sortByMap = "q.id";
+      break;
+    case "categoryName":
+      sortByMap = "c.name";
+      break;
+    case "difficultyName":
+      sortByMap = "qd.name";
+      break;
+    case "percentCorrect":
+      sortByMap =
+        "(CASE WHEN q.times_viewed = 0 THEN 0 ELSE (q.answered_correctly::float / q.times_viewed::float) END)";
+      break;
+    case "timesViewed":
+      sortByMap = "q.times_viewed";
+      break;
+    default:
+      sortByMap = "q.created_at";
+      break;
+  }
+  filterQuery += addFilters(filters);
+  filterQuery += ` ORDER BY ${sortByMap} ${order} LIMIT $1 OFFSET $2`;
+  console.log(filterQuery);
+  const questions = await pool.query(filterQuery, [limit, offset]);
   const rows = questions.rows.map((row) => {
     return {
       ...row,
@@ -55,7 +143,7 @@ const getSrbQuestions = async () => {
 
 const getEngQuestions = async () => {
   const questions = await pool.query(
-    `SELECT q.id, eng_question, eng_correct_answer, eng_wrong_answer_1, eng_wrong_answer_2, eng_wrong_answer_3, c.name as category_name, qd.name AS difficulty_name
+    `SELECT q.id, eng_question, eng_correct_answer, eng_wrong_answer_1, eng_wrong_answer_2, eng_wrong_answer_3, c.engName as category_name, qd.engName AS difficulty_name
         FROM ${tableNames.QUESTION_TABLE} AS q, ${tableNames.CATEGORY_TABLE} AS c, ${tableNames.DIFFICULTY_TABLE} AS qd
         WHERE q.category_id = c.id AND q.difficulty_id = qd.id
         ORDER BY created_at`
@@ -113,6 +201,18 @@ const createQuestion = async (
   ];
 
   await pool.query(query, values);
+};
+
+const bulkCreateQuestions = async (questions) => {
+  const query = format(
+    `INSERT INTO ${tableNames.QUESTION_TABLE}
+    (question, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3,
+    eng_question, eng_correct_answer, eng_wrong_answer_1, eng_wrong_answer_2, eng_wrong_answer_3,
+       category_id, difficulty_id, times_viewed, answered_correctly)
+    VALUES %L`,
+    questions
+  );
+  await pool.query(query);
 };
 
 const updateQuestion = async (
@@ -190,4 +290,6 @@ module.exports = {
   insertQuizResults,
   getSrbQuestions,
   getEngQuestions,
+  bulkCreateQuestions,
+  getRawQuestions,
 };

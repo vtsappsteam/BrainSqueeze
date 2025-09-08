@@ -17,6 +17,17 @@ const getQuestionDifficulty = async (questionDifficultyId) => {
     : null;
 };
 
+const getDifficultyIdByName = async (name, engName) => {
+  const difficultyQuery = `SELECT * FROM ${tableNames.DIFFICULTY_TABLE} WHERE name = $1 OR eng_name = $2`;
+  const dbresultsDifficulty = await pool.query(difficultyQuery, [
+    name,
+    engName,
+  ]);
+  return dbresultsDifficulty.rows.length > 0
+    ? dbresultsDifficulty.rows[0].id
+    : null;
+};
+
 const questionDifficultyExists = async (questionDifficultyId) =>
   (await getQuestionDifficulty(questionDifficultyId)) === null ? false : true;
 
@@ -60,11 +71,17 @@ const updateQuestionDifficulty = async (
   await pool.query(query, values);
 };
 
-const updateTotalQuestionsForDifficulty = async (questionDifficultyId) => {
+const updateTotalQuestionsForDifficulty = async (
+  questionDifficultyId,
+  increment = 1
+) => {
   const updateQuestionDifficultyQuery = `UPDATE ${tableNames.DIFFICULTY_TABLE}
-  SET total_questions = total_questions + 1 
+  SET total_questions = total_questions + $2
   WHERE id = $1`;
-  await pool.query(updateQuestionDifficultyQuery, [questionDifficultyId]);
+  await pool.query(updateQuestionDifficultyQuery, [
+    questionDifficultyId,
+    increment,
+  ]);
 };
 
 const deleteQuestionDifficulty = async (questionDifficultyId) => {
@@ -75,6 +92,7 @@ const deleteQuestionDifficulty = async (questionDifficultyId) => {
 module.exports = {
   getQuestionDifficulties,
   getQuestionDifficulty,
+  getDifficultyIdByName,
   questionDifficultyExists,
   getDifficultiesByCategoryId,
   createQuestionDifficulty,

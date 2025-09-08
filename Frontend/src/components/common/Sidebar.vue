@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import QuestionIcon from "../../assets/icons/question.svg";
 import TagIcon from "../../assets/icons/tag.svg";
@@ -11,10 +11,19 @@ const router = useRouter();
 const collapsed = ref(false);
 const selectedLink = ref("");
 
+const tempLink = ref("");
+
+const routeMap = {
+  "/questions": ["/questions", "/question"],
+  "/categories": ["/categories", "/category"],
+  "/difficulties": ["/difficulties", "/difficulty"],
+  "/users": ["/users", "/user"],
+};
+
 const links = [
   { to: "/questions", label: "Pitanja", icon: QuestionIcon },
   { to: "/categories", label: "Kategorije", icon: TagIcon },
-  { to: "/question-difficulties", label: "Težine pitanja", icon: StatsIcon },
+  { to: "/difficulties", label: "Težine pitanja", icon: StatsIcon },
   { to: "/users", label: "Nalozi", icon: UsersIcon },
 ];
 
@@ -23,9 +32,40 @@ const goTo = (to, label) => {
   router.push(to);
 };
 
+const goToQuestions = () => {
+  router.push("/questions");
+};
+
 const toggleSidebar = () => {
   collapsed.value = !collapsed.value;
+
+  tempLink.value = selectedLink.value;
+  selectedLink.value = "";
+  setTimeout(() => {
+    selectedLink.value = tempLink.value;
+  }, 300);
 };
+
+onMounted(() => {
+  const currentPath = router.currentRoute.value.path;
+
+  selectedLink.value =
+    links.find((link) => {
+      const variations = routeMap[link.to] || [link.to];
+      return variations.some((v) => currentPath.startsWith(v));
+    })?.label || "";
+});
+
+watch(
+  () => router.currentRoute.value.path,
+  (newPath) => {
+    selectedLink.value =
+      links.find((link) => {
+        const variations = routeMap[link.to] || [link.to];
+        return variations.some((v) => newPath.startsWith(v));
+      })?.label || "";
+  }
+);
 </script>
 
 <template>
@@ -39,12 +79,14 @@ const toggleSidebar = () => {
         class="sidebar__picture"
         src="@/assets/logo/BSQZlogo.png"
         alt="Brainsqeeze Logo"
+        @click="goToQuestions"
       />
       <img
         v-else
         class="sidebar__picture--mini"
         src="@/assets/logo/BSQZlogo-mini.png"
         alt="Brainsqeeze Mini Logo"
+        @click="goToQuestions"
       />
     </div>
     <div class="sidebar__nav">
@@ -66,13 +108,7 @@ const toggleSidebar = () => {
         <component
           v-if="link.icon"
           :is="link.icon"
-          style="
-            width: 20px;
-            height: 20px;
-            vertical-align: middle;
-            margin-right: 8px;
-            fill: white;
-          "
+          class="sidebar__link-icon"
         />
         <span v-if="!collapsed">{{ link.label }}</span>
       </div>
@@ -90,6 +126,16 @@ const toggleSidebar = () => {
   height: 100vh;
   position: relative;
   transition: width 0.3s;
+  font-size: 14px;
+
+  &__link-icon {
+    width: 20px;
+    height: 20px;
+    margin-top: 4px;
+    margin-right: 8px;
+    margin-left: 20px;
+    fill: white;
+  }
 
   &__close {
     position: absolute;
@@ -120,6 +166,7 @@ const toggleSidebar = () => {
     background: transparent 0% 0% no-repeat padding-box;
     opacity: 1;
     display: block;
+    cursor: pointer;
   }
 
   &__picture--mini {
@@ -128,22 +175,24 @@ const toggleSidebar = () => {
 
   &__nav {
     flex: 1;
-    padding: 0 0.5rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     align-items: flex-start;
+    margin-top: 34px;
   }
 
   &__link {
     display: flex;
-    width: 100%;
+    width: 232px;
+    height: 48px;
     align-items: center;
-    border-radius: 0.375rem;
-    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
     text-align: left;
     letter-spacing: 0px;
     transition: padding 0.3s;
+    margin-left: 16px;
+    margin-right: 12px;
 
     &:hover {
       cursor: pointer;
@@ -156,9 +205,21 @@ const toggleSidebar = () => {
     .sidebar__link {
       align-items: center;
       justify-content: center;
+      width: 48px;
+      height: 48px;
+      margin: 0 8px;
       span {
         display: none;
       }
+    }
+
+    .sidebar__link-icon {
+      width: 20px;
+      height: 20px;
+      margin-left: 10px;
+      margin-top: 4px;
+      margin-right: 8px;
+      fill: fff;
     }
     .sidebar__nav {
       align-items: center;
@@ -171,7 +232,11 @@ const toggleSidebar = () => {
       margin: 20px auto;
       width: 36px;
       height: 36px;
+      cursor: pointer;
     }
   }
+}
+.sidebar__link--selected {
+  background: #0e3f54;
 }
 </style>

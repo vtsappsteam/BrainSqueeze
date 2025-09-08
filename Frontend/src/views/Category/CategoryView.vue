@@ -24,6 +24,10 @@ const fetchCategory = async (id) => {
 };
 
 const handleSaveCategory = async () => {
+  if (!categoryNameInput.value || !categoryEngNameInput.value) {
+    alert("Morate popuniti sva polja.");
+    return;
+  }
   const payload = {
     name: categoryNameInput.value,
     engName: categoryEngNameInput.value,
@@ -56,28 +60,27 @@ onMounted(() => {
     @handle-save-category="handleSaveCategory"
     @handle-go-back="handleGoBack"
   />
-  <div>
-    <div>
-      <button
-        id="srbButton"
-        :class="{ active: selectedLanguage === 'sr' }"
-        @click="selectedLanguage = 'sr'"
-      >
-        SRPSKI
-      </button>
-      <button
-        id="engButton"
-        :class="{ active: selectedLanguage === 'en' }"
-        @click="selectedLanguage = 'en'"
-      >
-        ENGLESKI
-      </button>
-    </div>
-    <div>
-      <div>
-        <div id="serbianCategoryNameForm" v-if="selectedLanguage === 'sr'">
+  <div class="language-buttons-bar">
+    <p
+      :class="{ active: selectedLanguage === 'sr' }"
+      @click="selectedLanguage = 'sr'"
+    >
+      SRPSKI
+    </p>
+    <p
+      :class="{ active: selectedLanguage === 'en' }"
+      @click="selectedLanguage = 'en'"
+    >
+      ENGLESKI
+    </p>
+  </div>
+  <div class="section-container">
+    <div id="serbianCategoryNameForm" v-if="selectedLanguage === 'sr'">
+      <div class="inputs-row">
+        <div class="form-group">
           <label for="categoryNameInput"> Naziv kategorije </label>
           <input
+            class="input-category"
             id="categoryNameInput"
             v-model="categoryNameInput"
             type="text"
@@ -85,10 +88,13 @@ onMounted(() => {
           />
         </div>
       </div>
-      <div>
-        <div id="engCategoryNameForm" v-if="selectedLanguage === 'en'">
+    </div>
+    <div id="engCategoryNameForm" v-if="selectedLanguage === 'en'">
+      <div class="inputs-row">
+        <div class="form-group">
           <label for="categoryEngNameInput"> Category name </label>
           <input
+            class="input-category"
             id="categoryEngNameInput"
             v-model="categoryEngNameInput"
             type="text"
@@ -100,4 +106,18 @@ onMounted(() => {
   </div>
 </template>
 
-<style></style>
+<style scoped>
+.active {
+  background: #1976d2;
+  font-weight: bold;
+  font-family: "DMSans", sans-serif;
+  background-color: #fff;
+  color: #2c9dff;
+  border: none;
+  letter-spacing: -0.32px;
+}
+
+.input-category {
+  width: 250px;
+}
+</style>

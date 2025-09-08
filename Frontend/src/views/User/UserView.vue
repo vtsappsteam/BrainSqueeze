@@ -10,6 +10,7 @@ const router = useRouter();
 const firstNameInput = ref("");
 const lastNameInput = ref("");
 const emailInput = ref("");
+const passwordInput = ref("");
 
 const fetchUser = async (id) => {
   const response = await getUserById(id);
@@ -54,9 +55,9 @@ onMounted(() => {
     @handle-save-user="handleSaveUser"
     @handle-go-back="handleGoBack"
   />
-  <div class="app">
-    <div>
-      <div>
+  <div class="section-container">
+    <div class="inputs-column">
+      <div class="form-group">
         <label for="firstNameInput"> Ime </label>
         <input
           id="firstNameInput"
@@ -67,7 +68,7 @@ onMounted(() => {
           required
         />
       </div>
-      <div>
+      <div class="form-group">
         <label for="lastNameInput"> Prezime </label>
         <input
           id="lastNameInput"
@@ -78,7 +79,7 @@ onMounted(() => {
           required
         />
       </div>
-      <div>
+      <div class="form-group">
         <label for="emailInput"> Email </label>
         <input
           id="emailInput"
@@ -88,8 +89,8 @@ onMounted(() => {
           required
         />
       </div>
-      <div>
-        <label for="passwordInput"> Password: </label>
+      <div v-if="!route.query.id" class="form-group">
+        <label for="passwordInput"> Password </label>
         <input
           id="passwordInput"
           v-model="passwordInput"
@@ -102,4 +103,12 @@ onMounted(() => {
   </div>
 </template>
 
-<style></style>
+<style scoped>
+input {
+  width: 300px;
+  padding: 10px;
+  margin: 5px 0;
+  box-sizing: border-box;
+  border-radius: 0px;
+}
+</style>

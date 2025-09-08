@@ -1,9 +1,37 @@
 import api from "../config";
 
 export const getAllQuestions = async (param) => {
-  const response = await api.get(
-    `/questions?page=${param.page}&limit=${param.limit}`
-  );
+  const params = new URLSearchParams();
+
+  Object.entries(param).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      params.append(key, value);
+    }
+  });
+  const response = await api.get(`/questions?${params.toString()}`);
+  return response.data;
+};
+
+export const exportQuestions = async (param) => {
+  const params = new URLSearchParams();
+
+  Object.entries(param).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      params.append(key, value);
+    }
+  });
+  const response = await api.get(`/questions/exportRaw?${params.toString()}`, {
+    responseType: "blob",
+  });
+  return response.data;
+};
+
+export const importQuestions = async (formData) => {
+  const response = await api.post("/questions/import", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
   return response.data;
 };
 

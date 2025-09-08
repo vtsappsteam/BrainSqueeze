@@ -3,6 +3,8 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
+const swaggerUi = require("swagger-ui-express");
+const fs = require("fs");
 
 const authorizationRouter = require("./routes/authorization");
 const usersRouter = require("./routes/users");
@@ -17,6 +19,15 @@ const allowCrossDomain = (req, res, next) => {
   next();
 };
 
+const swaggerBase = require("./docs/swaggerBase.json");
+const docsDir = path.join(__dirname, "docs");
+fs.readdirSync(docsDir).forEach((file) => {
+  if (file !== "swaggerBase.json") {
+    const routeDoc = require(path.join(docsDir, file));
+    swaggerBase.paths = { ...swaggerBase.paths, ...routeDoc };
+  }
+});
+
 var app = express();
 
 app.use(allowCrossDomain);
@@ -28,9 +39,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerBase));
 app.use("/", authorizationRouter);
 app.use("/users", usersRouter);
-app.use("/question-difficulties", questionDifficultyRouter);
+app.use("/difficulties", questionDifficultyRouter);
 app.use("/questions", questionRouter);
 app.use("/categories", categoryRouter);
 

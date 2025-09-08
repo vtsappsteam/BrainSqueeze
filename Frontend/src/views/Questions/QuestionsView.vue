@@ -4,21 +4,31 @@ import { useRouter } from "vue-router";
 import {
   getAllQuestions,
   deleteQuestion,
+  exportQuestions,
 } from "@/services/Questions/questions";
 import QuestionsSubHeader from "./components/QuestionsSubHeader.vue";
 import QuestionsTable from "./components/QuestionsTable.vue";
 
 const questions = ref([]);
+const question = ref("");
 const limit = ref(100);
 const page = ref(1);
 const totalPages = ref(1);
 const router = useRouter();
+const filterCategory = ref("");
+const filterDifficulty = ref("");
+const filterTimesViewedMin = ref("");
+const filterTimesViewedMax = ref("");
+const filterPercentAnsweredCorrectlyMin = ref("");
+const filterPercentAnsweredCorrectlyMax = ref("");
 
 const fetchQuestions = async () => {
   try {
     const response = await getAllQuestions({
       page: page.value,
       limit: limit.value,
+      sortBy: "id",
+      order: "desc",
     });
     questions.value = response.content;
     totalPages.value = response.totalPages;
@@ -46,11 +56,77 @@ const handleDeleteExistingQuestion = async (id) => {
   if (window.confirm("Da li ste sigurni da želite da obrišete ovo pitanje?")) {
     try {
       await deleteQuestion(id);
-      console.log(`Delete question with id: ${id}`);
       await fetchQuestions();
     } catch (error) {
       console.error("Error deleting question:", error);
     }
+  }
+};
+
+const handleFilter = async (
+  filterName,
+  filterCategoryParam,
+  filterDifficultyParam,
+  filterTimesViewedMinParam,
+  filterTimesViewedMaxParam,
+  filterPercentAnsweredCorrectlyMinParam,
+  filterPercentAnsweredCorrectlyMaxParam,
+  sortBy,
+  order
+) => {
+  try {
+    question.value = filterName;
+    filterCategory.value = filterCategoryParam;
+    filterDifficulty.value = filterDifficultyParam;
+    filterTimesViewedMin.value = filterTimesViewedMinParam;
+    filterTimesViewedMax.value = filterTimesViewedMaxParam;
+    filterPercentAnsweredCorrectlyMin.value =
+      filterPercentAnsweredCorrectlyMinParam;
+    filterPercentAnsweredCorrectlyMax.value =
+      filterPercentAnsweredCorrectlyMaxParam;
+    const response = await getAllQuestions({
+      page: page.value,
+      limit: limit.value,
+      question: filterName,
+      categoryId: filterCategoryParam,
+      difficultyId: filterDifficultyParam,
+      timesViewedMin: filterTimesViewedMinParam,
+      timesViewedMax: filterTimesViewedMaxParam,
+      percentAnsweredCorrectlyMin: filterPercentAnsweredCorrectlyMinParam,
+      percentAnsweredCorrectlyMax: filterPercentAnsweredCorrectlyMaxParam,
+      sortBy: sortBy,
+      order: order,
+    });
+    questions.value = response.content;
+    totalPages.value = response.totalPages;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const handleExportQuestions = async () => {
+  try {
+    const response = await exportQuestions({
+      question: question.value,
+      categoryId: filterCategory.value,
+      difficultyId: filterDifficulty.value,
+      timesViewedMin: filterTimesViewedMin.value,
+      timesViewedMax: filterTimesViewedMax.value,
+      percentAnsweredCorrectlyMin: filterPercentAnsweredCorrectlyMin.value,
+      percentAnsweredCorrectlyMax: filterPercentAnsweredCorrectlyMax.value,
+    });
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `questionsExport_${timestamp}.xlsx`;
+    const url = window.URL.createObjectURL(new Blob([response]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error exporting questions:", error);
   }
 };
 
@@ -61,65 +137,20 @@ onMounted(() => {
 
 <template>
   <div>
-    <QuestionsSubHeader @handle-add-new-question="handleAddNewQuestion" />
+    <QuestionsSubHeader
+      @handle-add-new-question="handleAddNewQuestion"
+      @handle-export-questions="handleExportQuestions"
+    />
     <QuestionsTable
       :questions="questions"
+      :page="page"
+      :totalPages="totalPages"
+      @go-to-page="goToPage"
       @handle-edit-existing-question="handleEditExistingQuestion"
       @handle-delete-existing-question="handleDeleteExistingQuestion"
+      @handle-filter-question="handleFilter"
     />
-    <div class="pagination">
-      <button
-        class="pagination-btn"
-        :disabled="page === 1"
-        @click="goToPage(page - 1)"
-      >
-        &laquo;
-      </button>
-      <button
-        v-for="p in totalPages"
-        :key="p"
-        class="pagination-btn"
-        :class="{ active: page === p }"
-        @click="goToPage(p)"
-      >
-        {{ p }}
-      </button>
-      <button
-        class="pagination-btn"
-        :disabled="page === totalPages"
-        @click="goToPage(page + 1)"
-      >
-        &raquo;
-      </button>
-    </div>
   </div>
 </template>
 
-<style scoped>
-.pagination {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin: 2rem 0;
-}
-.pagination-btn {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  font-size: 1rem;
-  min-width: 40px;
-  transition: background 0.2s;
-}
-.pagination-btn.active {
-  background: #e6eeef;
-  font-weight: bold;
-  color: #1a2a32;
-  border-color: #e6eeef;
-}
-.pagination-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-</style>
+<style scoped></style>

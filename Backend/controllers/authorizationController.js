@@ -5,6 +5,7 @@ const {
   changePassword,
   saveRefreshToken,
   getUserById,
+  getRefreshToken,
 } = require("../services/userService");
 
 const SECRET = process.env.JWT_SECRET;
@@ -60,14 +61,16 @@ const loginEndpoint = async (req, res) => {
 const refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken) return res.sendStatus(401);
-
-  const user = await getUserById(req.user.id);
-  if (!user) return res.status(403).json({ error: "User not found" });
-
-  const isValid = await bcrypt.compare(refreshToken, user.refresh_token);
-  if (!isValid) return res.sendStatus(403);
-  jwt.verify(refreshToken, REFRESH_SECRET, (err) => {
+  console.log("Refresh token received:", refreshToken);
+  jwt.verify(refreshToken, REFRESH_SECRET, async (err, payload) => {
     if (err) return res.sendStatus(403);
+    const user = await getRefreshToken(payload.id);
+
+    if (!user || !user.refresh_token)
+      return res.status(403).json({ error: "User not found" });
+
+    const match = await bcrypt.compare(refreshToken, user.refresh_token);
+    if (!match) return res.status(403).json({ error: "Invalid refresh token" });
     const accessToken = generateAccessToken(user);
     res.json({ accessToken });
   });

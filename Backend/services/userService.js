@@ -11,15 +11,35 @@ const emailExists = async (email) => {
   return result.rows.length > 0;
 };
 
-const getUsers = async (filterName, limit, offset) => {
-  const filter = filterName?.split("%");
+const getUsers = async (filterName, limit, offset, sortBy, order) => {
+  const filter = filterName?.split(" ");
+  console.log("Filter array:", filter);
   let filterQuery = "";
   if (filter?.length === 1) {
     filterQuery += `WHERE first_name ILIKE '${filter[0]}%' OR last_name ILIKE '${filter[0]}%'`;
   } else if (filter?.length === 2) {
     filterQuery += `WHERE first_name ILIKE '${filter[0]}%' AND last_name ILIKE '${filter[1]}%'`;
   }
-  let query = `SELECT id, first_name, last_name, email, COUNT(*) OVER() as total_count FROM ${tableNames.USERS_TABLE} ${filterQuery} ORDER BY id LIMIT $1 OFFSET $2`;
+
+  let sortByMap = sortBy;
+  switch (sortBy) {
+    case "id":
+      sortByMap = "id";
+      break;
+    case "firstName":
+      sortByMap = "first_name";
+      break;
+    case "lastName":
+      sortByMap = "last_name";
+      break;
+    case "email":
+      sortByMap = "email";
+      break;
+    default:
+      sortByMap = "id";
+      break;
+  }
+  let query = `SELECT id, first_name, last_name, email, COUNT(*) OVER() as total_count FROM ${tableNames.USERS_TABLE} ${filterQuery} ORDER BY ${sortByMap} ${order} LIMIT $1 OFFSET $2`;
   return await pool.query(query, [limit, offset]);
 };
 
@@ -64,6 +84,12 @@ const saveRefreshToken = async (userId, refreshToken) => {
   await pool.query(query, values);
 };
 
+const getRefreshToken = async (id) => {
+  const query = `SELECT * FROM ${tableNames.USERS_TABLE} WHERE id=$1`;
+  const result = await pool.query(query, [id]);
+  return result.rows.length > 0 ? result.rows[0] : null;
+};
+
 module.exports = {
   getUsers,
   emailExists,
@@ -75,4 +101,5 @@ module.exports = {
   deleteUser,
   changePassword,
   saveRefreshToken,
+  getRefreshToken,
 };

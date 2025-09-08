@@ -13,13 +13,13 @@ const validateQuestionDifficultyRequest = (req, res, next) => {
       error: "Missing required parameter: 'engName'",
     });
   }
-  if (!maxThreshold) {
+  if (maxThreshold === undefined) {
     return res.status(400).json({
       status: 400,
       error: "Missing required parameter: 'maxThreshold'",
     });
   }
-  if (!minThreshold) {
+  if (minThreshold === undefined) {
     return res.status(400).json({
       status: 400,
       error: "Missing required parameter: 'minThreshold'",

@@ -15,7 +15,7 @@ const {
 router.post("/login", validateLoginRequest, loginEndpoint);
 router.post("/logout", authorize, logoutEndpoint);
 router.post("/register", registerEndpoint);
-router.post("/refreshToken", authorize, refreshToken);
+router.post("/refreshToken", refreshToken);
 router.post("/changePassword", authorize, changePasswordEndpoint);
 
 module.exports = router;

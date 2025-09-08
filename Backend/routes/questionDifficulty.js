@@ -3,9 +3,7 @@ const router = express.Router();
 const {
   getAllQuestionDifficultiesEndpoint,
   getQuestionDifficultyByIdEndpoint,
-  createQuestionDifficultyEndpoint,
   updateQuestionDifficultyEndpoint,
-  deleteQuestionDifficultyEndpoint,
 } = require("../controllers/questionDifficultyController");
 const {
   validateQuestionDifficultyRequest,
@@ -14,18 +12,17 @@ const { authorize } = require("../middlewares/authorizationRules");
 
 router.get("/", authorize, getAllQuestionDifficultiesEndpoint);
 router.get("/:id", authorize, getQuestionDifficultyByIdEndpoint);
-router.post(
-  "/",
-  authorize,
-  validateQuestionDifficultyRequest,
-  createQuestionDifficultyEndpoint
-);
+router.post("/", (req, res) => {
+  res.status(501).json({ message: "Not implemented" });
+});
 router.put(
   "/:id",
   authorize,
   validateQuestionDifficultyRequest,
   updateQuestionDifficultyEndpoint
 );
-router.delete("/:id", authorize, deleteQuestionDifficultyEndpoint);
+router.delete("/:id", (req, res) => {
+  res.status(501).json({ message: "Not implemented" });
+});
 
 module.exports = router;

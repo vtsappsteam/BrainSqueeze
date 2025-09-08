@@ -8,8 +8,15 @@ export const getAllCategories = async (param) => {
 };
 
 export const getAllCategoriesWithDifficulties = async (param) => {
+  const params = new URLSearchParams();
+
+  Object.entries(param).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      params.append(key, value);
+    }
+  });
   const response = await api.get(
-    `/categories/withDifficulties?page=${param.page}&limit=${param.limit}`
+    `/categories/withDifficulties?${params.toString()}`
   );
   return response.data;
 };

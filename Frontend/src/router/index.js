@@ -22,13 +22,13 @@ const routes = [
     component: () => import("@/views/Category/CategoryView.vue"),
   },
   {
-    path: "/question-difficulties",
+    path: "/difficulties",
     name: "Question Difficulties",
     component: () =>
       import("@/views/QuestionDifficulties/QuestionDifficultiesView.vue"),
   },
   {
-    path: "/question-difficulty",
+    path: "/difficulty",
     name: "Question Difficulty",
     component: () =>
       import("@/views/QuestionDifficulty/QuestionDifficultyView.vue"),

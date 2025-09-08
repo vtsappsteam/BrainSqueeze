@@ -43,7 +43,7 @@ import MainHeader from "@/components/common/MainHeader.vue";
     flex: 1;
     margin: 1rem;
     overflow: auto;
-    background-color: #fff;
+    background: #edeff7 0% 0% no-repeat padding-box;
   }
 }
 </style>

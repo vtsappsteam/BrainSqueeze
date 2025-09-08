@@ -1,4 +1,5 @@
 const { convertKeys } = require("../helpers/helpers");
+const { userSortKeys, allowedOrders } = require("../helpers/sortKeys");
 const {
   getUsers,
   getUserById,
@@ -14,9 +15,17 @@ const getAllUsersEndpoint = async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
   const filterName = req.query.filterName || null;
+  const sortBy = req.query.sortBy;
+  const order = req.query.order || "asc";
 
+  if (
+    sortBy &&
+    (!userSortKeys.includes(sortBy) || !allowedOrders.includes(order))
+  ) {
+    return res.status(400).json({ error: "Invalid sort parameters!" });
+  }
   try {
-    const users = await getUsers(filterName, limit, offset);
+    const users = await getUsers(filterName, limit, offset, sortBy, order);
     const totalCount =
       users.rows.length > 0 ? parseInt(users.rows[0].total_count) : 0;
     const totalPages = Math.ceil(totalCount / limit);
@@ -118,5 +127,4 @@ module.exports = {
   createUserEndpoint,
   updateUserEndpoint,
   deleteUserEndpoint,
-  //searchUserByFirstNameAndLastName, TBD
 };
