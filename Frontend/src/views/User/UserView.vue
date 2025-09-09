@@ -12,6 +12,9 @@ const lastNameInput = ref("");
 const emailInput = ref("");
 const passwordInput = ref("");
 
+const errorMessage = ref("");
+const showErrorModal = ref(false);
+
 const fetchUser = async (id) => {
   const response = await getUserById(id);
   const data = response.content;
@@ -21,6 +24,17 @@ const fetchUser = async (id) => {
 };
 
 const handleSaveUser = async () => {
+  if (
+    !firstNameInput.value ||
+    !lastNameInput.value ||
+    !emailInput.value ||
+    (!route.query.id && !passwordInput.value)
+  ) {
+    errorMessage.value = "Sva polja su obavezna!";
+    showErrorModal.value = true;
+    return;
+  }
+
   const payload = {
     firstName: firstNameInput.value,
     lastName: lastNameInput.value,
@@ -99,6 +113,14 @@ onMounted(() => {
           required
         />
       </div>
+    </div>
+  </div>
+  <div v-if="showErrorModal" class="modal">
+    <div class="modal-content">
+      <p>{{ errorMessage }}</p>
+      <button class="modal-button" @click="showErrorModal = false">
+        Zatvori
+      </button>
     </div>
   </div>
 </template>

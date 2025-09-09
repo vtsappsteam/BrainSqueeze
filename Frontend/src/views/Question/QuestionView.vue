@@ -36,6 +36,9 @@ const engWrongAnswer1Input = ref("");
 const engWrongAnswer2Input = ref("");
 const engWrongAnswer3Input = ref("");
 
+const errorMessage = ref("");
+const showErrorModal = ref(false);
+
 const fetchCategories = async () => {
   try {
     const response = await getAllCategories({
@@ -80,8 +83,22 @@ const fetchQuestion = async (id) => {
 };
 
 const handleSaveQuestion = async () => {
-  if (!selectedCategory.value || !selectedDifficulty.value) {
-    alert("Morate izabrati kategoriju i težinu pitanja.");
+  if (
+    !selectedCategory.value ||
+    !selectedDifficulty.value ||
+    !question.value ||
+    !correctAnswerInput.value ||
+    !wrongAnswer1Input.value ||
+    !wrongAnswer2Input.value ||
+    !wrongAnswer3Input.value ||
+    !engQuestion.value ||
+    !engCorrectAnswerInput.value ||
+    !engWrongAnswer1Input.value ||
+    !engWrongAnswer2Input.value ||
+    !engWrongAnswer3Input.value
+  ) {
+    errorMessage.value = "Sva polja su obavezna!";
+    showErrorModal.value = true;
     return;
   }
   const payload = {
@@ -346,6 +363,14 @@ onMounted(() => {
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  <div v-if="showErrorModal" class="modal">
+    <div class="modal-content">
+      <p>{{ errorMessage }}</p>
+      <button class="modal-button" @click="showErrorModal = false">
+        Zatvori
+      </button>
     </div>
   </div>
 </template>

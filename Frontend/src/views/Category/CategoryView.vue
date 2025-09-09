@@ -16,6 +16,9 @@ const selectedLanguage = ref("sr");
 const categoryNameInput = ref("");
 const categoryEngNameInput = ref("");
 
+const errorMessage = ref("");
+const showErrorModal = ref(false);
+
 const fetchCategory = async (id) => {
   const response = await getCategoryById(id);
   const data = response.content;
@@ -25,7 +28,8 @@ const fetchCategory = async (id) => {
 
 const handleSaveCategory = async () => {
   if (!categoryNameInput.value || !categoryEngNameInput.value) {
-    alert("Morate popuniti sva polja.");
+    errorMessage.value = "Sva polja su obavezna!";
+    showErrorModal.value = true;
     return;
   }
   const payload = {
@@ -102,6 +106,14 @@ onMounted(() => {
           />
         </div>
       </div>
+    </div>
+  </div>
+  <div v-if="showErrorModal" class="modal">
+    <div class="modal-content">
+      <p>{{ errorMessage }}</p>
+      <button class="modal-button" @click="showErrorModal = false">
+        Zatvori
+      </button>
     </div>
   </div>
 </template>

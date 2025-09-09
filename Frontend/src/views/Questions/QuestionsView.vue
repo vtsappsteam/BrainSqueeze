@@ -21,6 +21,9 @@ const filterTimesViewedMin = ref("");
 const filterTimesViewedMax = ref("");
 const filterPercentAnsweredCorrectlyMin = ref("");
 const filterPercentAnsweredCorrectlyMax = ref("");
+const showConfirmModal = ref(false);
+const confirmMessage = ref("");
+const onConfirmDelete = ref(() => {});
 
 const fetchQuestions = async () => {
   try {
@@ -53,14 +56,17 @@ const handleEditExistingQuestion = (id) => {
 };
 
 const handleDeleteExistingQuestion = async (id) => {
-  if (window.confirm("Da li ste sigurni da želite da obrišete ovo pitanje?")) {
+  confirmMessage.value = "Da li ste sigurni da želite da obrišete korisnika?";
+  showConfirmModal.value = true;
+  onConfirmDelete.value = async () => {
+    showConfirmModal.value = false;
     try {
       await deleteQuestion(id);
       await fetchQuestions();
     } catch (error) {
       console.error("Error deleting question:", error);
     }
-  }
+  };
 };
 
 const handleFilter = async (
@@ -150,6 +156,19 @@ onMounted(() => {
       @handle-delete-existing-question="handleDeleteExistingQuestion"
       @handle-filter-question="handleFilter"
     />
+  </div>
+  <div v-if="showConfirmModal" class="modal">
+    <div class="modal-content">
+      <p>{{ confirmMessage }}</p>
+      <button class="modal-button" @click="onConfirmDelete">Potvrdi</button>
+      <button
+        class="modal-button-cancel"
+        style="background: #ccc; color: #333"
+        @click="showConfirmModal = false"
+      >
+        Otkaži
+      </button>
+    </div>
   </div>
 </template>
 

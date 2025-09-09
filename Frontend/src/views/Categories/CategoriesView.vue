@@ -12,6 +12,9 @@ const categories = ref([]);
 const limit = ref(100);
 const page = ref(1);
 const totalPages = ref(1);
+const showConfirmModal = ref(false);
+const confirmMessage = ref("");
+const onConfirmDelete = ref(() => {});
 
 const router = useRouter();
 
@@ -37,16 +40,18 @@ const handleEditExistingCategory = (id) => {
 };
 
 const handleDeleteExistingCategory = async (id) => {
-  if (
-    window.confirm("Da li ste sigurni da želite da obrišete ovu kategoriju?")
-  ) {
+  confirmMessage.value =
+    "Da li ste sigurni da želite da obrišete ovu kategoriju?";
+  showConfirmModal.value = true;
+  onConfirmDelete.value = async () => {
+    showConfirmModal.value = false;
     try {
       await deleteCategory(id);
       await fetchCategories();
     } catch (error) {
       console.error("Error deleting category:", error);
     }
-  }
+  };
 };
 
 const handleSearch = async (filterName, sortBy, order) => {
@@ -82,5 +87,18 @@ onMounted(() => {
       @handle-delete-existing-category="handleDeleteExistingCategory"
       @handle-search-category="handleSearch"
     />
+  </div>
+  <div v-if="showConfirmModal" class="modal">
+    <div class="modal-content">
+      <p>{{ confirmMessage }}</p>
+      <button class="modal-button" @click="onConfirmDelete">Potvrdi</button>
+      <button
+        class="modal-button-cancel"
+        style="background: #ccc; color: #333"
+        @click="showConfirmModal = false"
+      >
+        Otkaži
+      </button>
+    </div>
   </div>
 </template>

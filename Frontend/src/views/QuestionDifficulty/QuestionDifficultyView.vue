@@ -17,6 +17,9 @@ const engQuestionDifficultyNameInput = ref("");
 const questionDifficultyMinThresholdInput = ref("");
 const questionDifficultyMaxThresholdInput = ref("");
 
+const errorMessage = ref("");
+const showErrorModal = ref(false);
+
 const fetchQuestionDifficulty = async (id) => {
   const response = await getQuestionDifficultyById(id);
   const data = response.content;
@@ -27,6 +30,16 @@ const fetchQuestionDifficulty = async (id) => {
 };
 
 const handleSaveQuestionDifficulty = async () => {
+  if (
+    !questionDifficultyNameInput.value ||
+    !engQuestionDifficultyNameInput.value ||
+    !questionDifficultyMinThresholdInput.value ||
+    !questionDifficultyMaxThresholdInput.value
+  ) {
+    errorMessage.value = "Sva polja su obavezna!";
+    showErrorModal.value = true;
+    return;
+  }
   const payload = {
     name: questionDifficultyNameInput.value,
     engName: engQuestionDifficultyNameInput.value,
@@ -145,6 +158,14 @@ onMounted(() => {
           />
         </div>
       </div>
+    </div>
+  </div>
+  <div v-if="showErrorModal" class="modal">
+    <div class="modal-content">
+      <p>{{ errorMessage }}</p>
+      <button class="modal-button" @click="showErrorModal = false">
+        Zatvori
+      </button>
     </div>
   </div>
 </template>

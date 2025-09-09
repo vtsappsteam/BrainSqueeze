@@ -11,6 +11,9 @@ const page = ref(1);
 const totalPages = ref(1);
 const router = useRouter();
 const filterName = ref("");
+const showConfirmModal = ref(false);
+const confirmMessage = ref("");
+const onConfirmDelete = ref(() => {});
 
 const fetchUsers = async () => {
   try {
@@ -34,16 +37,17 @@ const handleEditExistingUser = (id) => {
 };
 
 const handleDeleteExistingUser = async (id) => {
-  if (
-    window.confirm("Da li ste sigurni da želite da obrišete ovog korisnika?")
-  ) {
+  confirmMessage.value = "Da li ste sigurni da želite da obrišete korisnika?";
+  showConfirmModal.value = true;
+  onConfirmDelete.value = async () => {
+    showConfirmModal.value = false;
     try {
       await deleteUser(id);
       await fetchUsers();
     } catch (error) {
       console.error("Error deleting user:", error);
     }
-  }
+  };
 };
 
 const goToPage = (p) => {
@@ -82,5 +86,18 @@ onMounted(() => {
       @handle-delete-existing-user="handleDeleteExistingUser"
       @handle-search-user="handleSearch"
     />
+  </div>
+  <div v-if="showConfirmModal" class="modal">
+    <div class="modal-content">
+      <p>{{ confirmMessage }}</p>
+      <button class="modal-button" @click="onConfirmDelete">Potvrdi</button>
+      <button
+        class="modal-button-cancel"
+        style="background: #ccc; color: #333"
+        @click="showConfirmModal = false"
+      >
+        Otkaži
+      </button>
+    </div>
   </div>
 </template>
