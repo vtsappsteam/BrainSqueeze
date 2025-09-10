@@ -1,4 +1,7 @@
 <script setup>
+import BackIcon from "@/assets/icons/arrow_back.svg";
+import SaveIcon from "@/assets/icons/save.svg";
+
 const emit = defineEmits(["handle-save-user", "handle-go-back"]);
 
 const handleSaveUser = () => {
@@ -11,43 +14,13 @@ const handleGoBack = () => {
 </script>
 
 <template>
-  <div class="header">
-    <button class="header__btn-back" @click="handleGoBack"><</button>
-    <button class="header__btn-add" @click="handleSaveUser">
+  <div class="page-subheader justify-between">
+    <button class="page-subheader__btn-back" @click="handleGoBack">
+      <BackIcon class="btn-icon" />
+    </button>
+    <button class="page-subheader__btn-save" @click="handleSaveUser">
       Sačuvaj izmene
+      <SaveIcon class="btn-icon" />
     </button>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem;
-  border-bottom: 1px solid #ccc;
-
-  &__btn-back {
-    top: 99px;
-    left: 300px;
-    width: 36px;
-    height: 36px;
-    background: #1d90a8 0% 0% no-repeat padding-box;
-    border-radius: 6px;
-    opacity: 1;
-    cursor: pointer;
-  }
-
-  &__btn-add {
-    top: 99px;
-    left: 1716px;
-    width: 165px;
-    height: 36px;
-    padding: 0.5rem 1rem;
-    background: #1d90a8 0% 0% no-repeat padding-box;
-    border-radius: 6px;
-    opacity: 1;
-    cursor: pointer;
-  }
-}
-</style>

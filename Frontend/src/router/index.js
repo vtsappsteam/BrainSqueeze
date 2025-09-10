@@ -22,13 +22,13 @@ const routes = [
     component: () => import("@/views/Category/CategoryView.vue"),
   },
   {
-    path: "/question-difficulties",
+    path: "/difficulties",
     name: "Question Difficulties",
     component: () =>
       import("@/views/QuestionDifficulties/QuestionDifficultiesView.vue"),
   },
   {
-    path: "/question-difficulty",
+    path: "/difficulty",
     name: "Question Difficulty",
     component: () =>
       import("@/views/QuestionDifficulty/QuestionDifficultyView.vue"),
@@ -42,6 +42,21 @@ const routes = [
     path: "/user",
     name: "User",
     component: () => import("@/views/User/UserView.vue"),
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import("@/views/Login/LoginView.vue"),
+  },
+  {
+    path: "/register",
+    name: "Register",
+    component: () => import("@/views/Register/RegisterView.vue"),
+  },
+  {
+    path: "/changePassword",
+    name: "Change passord",
+    component: () => import("@/views/ChangePassword/ChangePasswordView.vue"),
   },
 ];
 

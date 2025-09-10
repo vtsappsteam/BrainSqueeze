@@ -1,11 +1,11 @@
 const { convertKeys } = require("../helpers/helpers");
+const { categorySortKeys, allowedOrders } = require("../helpers/sortKeys");
 const {
   getCategories,
   getCategory,
   deleteCategory,
   updateCategory,
   createCategory,
-  totalCategoriesCount,
 } = require("../services/categoryService");
 const {
   getDifficultiesByCategoryId,
@@ -15,12 +15,22 @@ const getAllCategoriesEndpoint = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
-  try {
-    const totalCountResult = await totalCategoriesCount();
-    const totalCount = parseInt(totalCountResult.rows[0].count);
-    const totalPages = Math.ceil(totalCount / limit);
+  const filterName = req.query.filterName || null;
+  const sortBy = "name";
+  const order = "asc";
 
-    const categories = await getCategories(limit, offset);
+  try {
+    console.log(sortBy, order);
+    const categories = await getCategories(
+      filterName,
+      limit,
+      offset,
+      sortBy,
+      order
+    );
+    const totalCount =
+      categories.rows.length > 0 ? parseInt(categories.rows[0].total_count) : 0;
+    const totalPages = Math.ceil(totalCount / limit);
     const data = convertKeys(categories.rows, "camel");
 
     res.json({
@@ -40,30 +50,68 @@ const getAllCategoriesWithDifficultiesEndpoint = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
+  const filterName = req.query.filterName || null;
+  const sortBy = req.query.sortBy;
+  const order = req.query.order || "asc";
+  if (
+    sortBy &&
+    (!categorySortKeys.includes(sortBy) || !allowedOrders.includes(order))
+  ) {
+    return res.status(400).json({ error: "Invalid sort parameters!" });
+  }
   try {
-    const totalCountResult = await totalCategoriesCount();
-    const totalCount = parseInt(totalCountResult.rows[0].count);
+    const categories = await getCategories(
+      filterName,
+      limit,
+      offset,
+      sortBy,
+      order
+    );
+    const totalCount =
+      categories.rows.length > 0 ? parseInt(categories.rows[0].total_count) : 0;
     const totalPages = Math.ceil(totalCount / limit);
-
-    const categories = await getCategories(limit, offset);
     const transformedData = [];
 
     for (const category of categories.rows) {
       const difficultyResults = await getDifficultiesByCategoryId(category.id);
-      if (difficultyResults.rows.length !== 0) {
-        console.log(difficultyResults.rows);
-        const difficulties = [];
-        difficultyResults.rows.forEach((difficulty) => {
-          difficulties.push({
-            id: difficulty.id,
-            name: difficulty.name,
-            totalQuestions: difficulty.total,
-          });
+
+      transformedData.push({
+        id: category.id,
+        categoryName: category.name,
+        totalQuestions: category.total_questions,
+        totalQuestionsEasy:
+          difficultyResults.rows?.find((x) => x.id === "1")?.total ?? "0",
+        totalQuestionsMedium:
+          difficultyResults.rows?.find((x) => x.id === "2")?.total ?? "0",
+        totalQuestionsHard:
+          difficultyResults.rows?.find((x) => x.id === "3")?.total ?? "0",
+      });
+
+      if (sortBy === "totalQuestionsEasy") {
+        transformedData.sort((a, b) => {
+          if (order === "asc") {
+            return a.totalQuestionsEasy - b.totalQuestionsEasy;
+          } else {
+            return b.totalQuestionsEasy - a.totalQuestionsEasy;
+          }
         });
-        transformedData.push({
-          id: category.id,
-          categoryName: category.name,
-          difficulties,
+      }
+      if (sortBy === "totalQuestionsMedium") {
+        transformedData.sort((a, b) => {
+          if (order === "asc") {
+            return a.totalQuestionsMedium - b.totalQuestionsMedium;
+          } else {
+            return b.totalQuestionsMedium - a.totalQuestionsMedium;
+          }
+        });
+      }
+      if (sortBy === "totalQuestionsHard") {
+        transformedData.sort((a, b) => {
+          if (order === "asc") {
+            return a.totalQuestionsHard - b.totalQuestionsHard;
+          } else {
+            return b.totalQuestionsHard - a.totalQuestionsHard;
+          }
         });
       }
     }
@@ -102,7 +150,7 @@ const getCategoryByIdEndpoint = async (req, res) => {
 
 const createCategoryEndpoint = async (req, res) => {
   try {
-    await createCategory(req.body.name);
+    await createCategory(req.body.name, req.body.engName);
     let apires = {
       status: 200,
       message: "Successfully created Category.",
@@ -130,7 +178,7 @@ const deleteCategoryEndpoint = async (req, res) => {
 
 const updateCategoryEndpoint = async (req, res) => {
   try {
-    await updateCategory(req.params.id, req.body.name);
+    await updateCategory(req.params.id, req.body.name, req.body.engName);
     let apires = {
       status: 200,
       message: "Successfully updated Category.",

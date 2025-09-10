@@ -10,6 +10,10 @@ const router = useRouter();
 const firstNameInput = ref("");
 const lastNameInput = ref("");
 const emailInput = ref("");
+const passwordInput = ref("");
+
+const errorMessage = ref("");
+const showErrorModal = ref(false);
 
 const fetchUser = async (id) => {
   const response = await getUserById(id);
@@ -17,15 +21,25 @@ const fetchUser = async (id) => {
   firstNameInput.value = data.firstName;
   lastNameInput.value = data.lastName;
   emailInput.value = data.email;
-  console.log(response);
 };
 
 const handleSaveUser = async () => {
+  if (
+    !firstNameInput.value ||
+    !lastNameInput.value ||
+    !emailInput.value ||
+    (!route.query.id && !passwordInput.value)
+  ) {
+    errorMessage.value = "Sva polja su obavezna!";
+    showErrorModal.value = true;
+    return;
+  }
+
   const payload = {
     firstName: firstNameInput.value,
     lastName: lastNameInput.value,
     email: emailInput.value,
-    roleId: 1,
+    password: passwordInput.value,
   };
   try {
     if (route.query.id) {
@@ -55,15 +69,9 @@ onMounted(() => {
     @handle-save-user="handleSaveUser"
     @handle-go-back="handleGoBack"
   />
-  <div>
-    <div class="app">
-      <div>
-        <button>SRPSKI</button>
-        <button>ENGLESKI</button>
-      </div>
-    </div>
-    <div>
-      <div>
+  <div class="section-container">
+    <div class="inputs-column">
+      <div class="form-group">
         <label for="firstNameInput"> Ime </label>
         <input
           id="firstNameInput"
@@ -71,34 +79,58 @@ onMounted(() => {
           type="text"
           class="firstNameInput"
           placeholder="Unesite ime korisnika"
+          required
         />
       </div>
-      <div>
-        <label for="lastNameInput"> Ime </label>
+      <div class="form-group">
+        <label for="lastNameInput"> Prezime </label>
         <input
           id="lastNameInput"
           v-model="lastNameInput"
           type="text"
           class="lastNameInput"
           placeholder="Unesite prezime korisnika"
+          required
         />
       </div>
-      <div>
+      <div class="form-group">
         <label for="emailInput"> Email </label>
         <input
           id="emailInput"
           v-model="emailInput"
-          type="text"
-          class="emailInput"
+          type="email"
           placeholder="Unesite email korisnika"
+          required
+        />
+      </div>
+      <div v-if="!route.query.id" class="form-group">
+        <label for="passwordInput"> Password </label>
+        <input
+          id="passwordInput"
+          v-model="passwordInput"
+          type="password"
+          placeholder="Unesite password korisnika"
+          required
         />
       </div>
     </div>
   </div>
+  <div v-if="showErrorModal" class="modal">
+    <div class="modal-content">
+      <p>{{ errorMessage }}</p>
+      <button class="modal-button" @click="showErrorModal = false">
+        Zatvori
+      </button>
+    </div>
+  </div>
 </template>
 
-<style>
-.app {
-  font: DM Sans 14pt;
+<style scoped>
+input {
+  width: 300px;
+  padding: 10px;
+  margin: 5px 0;
+  box-sizing: border-box;
+  border-radius: 0px;
 }
 </style>

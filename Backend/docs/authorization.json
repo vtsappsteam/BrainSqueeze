@@ -1,0 +1,244 @@
+{
+  "/login": {
+    "post": {
+      "summary": "Login",
+      "description": "Login with email and password to receive a JWT token.",
+      "tags": ["Authentication"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["email", "password"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "test@test.com"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "Password123!"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "User logged in",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "accessToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI..."
+                  },
+                  "refreshToken": {
+                    "type": "string",
+                    "example": "b9c87d5f-e32f-4d5b-8c0e-9..."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad request"
+        }
+      }
+    }
+  },
+  "/logout": {
+    "post": {
+      "summary": "Logout",
+      "description": "Logout by invalidating the refresh token.",
+      "tags": ["Authentication"],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "User logged out"
+        },
+        "401": {
+          "description": "Unauthorized"
+        }
+      }
+    }
+  },
+  "/changePassword": {
+    "post": {
+      "summary": "Change Password",
+      "description": "Change the password of the logged-in user.",
+      "tags": ["Authentication"],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["email", "oldPassword", "newPassword"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "test@test.com"
+                },
+                "oldPassword": {
+                  "type": "string",
+                  "example": "OldPassword123!"
+                },
+                "newPassword": {
+                  "type": "string",
+                  "example": "NewPassword123!"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Password changed successfully"
+        },
+        "400": {
+          "description": "Bad request"
+        },
+        "401": {
+          "description": "Unauthorized"
+        }
+      }
+    }
+  },
+  "/refreshToken": {
+    "post": {
+      "summary": "Refresh Token",
+      "description": "Refresh the access token using a valid refresh token.",
+      "tags": ["Authentication"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["refreshToken"],
+              "properties": {
+                "refreshToken": {
+                  "type": "string",
+                  "example": "b9c87d5f-e32f-4d5b-8c0e-9..."
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "New access token issued",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "accessToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI..."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad request"
+        },
+        "401": {
+          "description": "Unauthorized"
+        }
+      }
+    }
+  },
+  "/register": {
+    "post": {
+      "summary": "Register",
+      "description": "Register a new user.",
+      "tags": ["Authentication"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["email", "oldPassword", "newPassword"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "test@test.com"
+                },
+                "oldPassword": {
+                  "type": "string",
+                  "example": "OldPassword123!"
+                },
+                "newPassword": {
+                  "type": "string",
+                  "example": "NewPassword123!"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "User registered successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "accessToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI..."
+                  },
+                  "refreshToken": {
+                    "type": "string",
+                    "example": "b9c87d5f-e32f-4d5b-8c0e-9..."
+                  },
+                  "id": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "firstName": {
+                    "type": "string",
+                    "example": "John"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "Doe"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "User registered successfully"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad request"
+        }
+      }
+    }
+  }
+}

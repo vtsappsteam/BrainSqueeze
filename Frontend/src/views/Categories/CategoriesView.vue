@@ -2,37 +2,32 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import {
-  getAllCategories,
+  getAllCategoriesWithDifficulties,
   deleteCategory,
 } from "@/services/Categories/categories";
 import CategoriesSubHeader from "@/views/Categories/components/CategoriesSubHeader.vue";
 import CategoriesTable from "@/views/Categories/components/CategoriesTable.vue";
 
 const categories = ref([]);
-const limit = ref(10);
+const limit = ref(100);
 const page = ref(1);
 const totalPages = ref(1);
+const showConfirmModal = ref(false);
+const confirmMessage = ref("");
+const onConfirmDelete = ref(() => {});
 
 const router = useRouter();
 
 const fetchCategories = async () => {
   try {
-    const response = await getAllCategories({
+    const response = await getAllCategoriesWithDifficulties({
       page: page.value,
       limit: limit.value,
     });
     categories.value = response.content;
     totalPages.value = response.totalPages;
-    console.log(response);
   } catch (error) {
     console.error(error);
-  }
-};
-
-const goToPage = (p) => {
-  if (p >= 1 && p <= totalPages.value) {
-    page.value = p;
-    fetchCategories();
   }
 };
 
@@ -45,16 +40,34 @@ const handleEditExistingCategory = (id) => {
 };
 
 const handleDeleteExistingCategory = async (id) => {
-  if (
-    window.confirm("Da li ste sigurni da želite da obrišete ovu kategoriju?")
-  ) {
+  confirmMessage.value =
+    "Da li ste sigurni da želite da obrišete ovu kategoriju?";
+  showConfirmModal.value = true;
+  onConfirmDelete.value = async () => {
+    showConfirmModal.value = false;
     try {
       await deleteCategory(id);
-      console.log(`Delete category with id: ${id}`);
       await fetchCategories();
     } catch (error) {
       console.error("Error deleting category:", error);
     }
+  };
+};
+
+const handleSearch = async (filterName, sortBy, order) => {
+  try {
+    const response = await getAllCategoriesWithDifficulties({
+      page: page.value,
+      limit: limit.value,
+      filterName: filterName,
+      sortBy: sortBy,
+      order: order,
+    });
+    categories.value = response.content;
+    totalPages.value = response.totalPages;
+    filterName = "";
+  } catch (error) {
+    console.error(error);
   }
 };
 
@@ -66,64 +79,26 @@ onMounted(() => {
 <template>
   <div>
     <CategoriesSubHeader @handle-add-new-category="handleAddNewCategory" />
+  </div>
+  <div>
     <CategoriesTable
       :categories="categories"
       @handle-edit-existing-category="handleEditExistingCategory"
       @handle-delete-existing-category="handleDeleteExistingCategory"
+      @handle-search-category="handleSearch"
     />
   </div>
-  <div class="pagination">
-    <button
-      class="pagination-btn"
-      :disabled="page === 1"
-      @click="goToPage(page - 1)"
-    >
-      &laquo;
-    </button>
-    <button
-      v-for="p in totalPages"
-      :key="p"
-      class="pagination-btn"
-      :class="{ active: page === p }"
-      @click="goToPage(p)"
-    >
-      {{ p }}
-    </button>
-    <button
-      class="pagination-btn"
-      :disabled="page === totalPages"
-      @click="goToPage(page + 1)"
-    >
-      &raquo;
-    </button>
+  <div v-if="showConfirmModal" class="modal">
+    <div class="modal-content">
+      <p>{{ confirmMessage }}</p>
+      <button class="modal-button" @click="onConfirmDelete">Potvrdi</button>
+      <button
+        class="modal-button-cancel"
+        style="background: #ccc; color: #333"
+        @click="showConfirmModal = false"
+      >
+        Otkaži
+      </button>
+    </div>
   </div>
 </template>
-
-<style scoped>
-.pagination {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin: 2rem 0;
-}
-.pagination-btn {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  font-size: 1rem;
-  min-width: 40px;
-  transition: background 0.2s;
-}
-.pagination-btn.active {
-  background: #e6eeef;
-  font-weight: bold;
-  color: #1a2a32;
-  border-color: #e6eeef;
-}
-.pagination-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-</style>

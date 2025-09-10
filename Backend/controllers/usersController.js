@@ -1,25 +1,34 @@
 const { convertKeys } = require("../helpers/helpers");
+const { userSortKeys, allowedOrders } = require("../helpers/sortKeys");
 const {
   getUsers,
-  totalUsersCount,
   getUserById,
   createUser,
   updateUser,
   deleteUser,
+  emailExists,
 } = require("../services/userService");
+const bcrypt = require("bcrypt");
 
 const getAllUsersEndpoint = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
+  const filterName = req.query.filterName || null;
+  const sortBy = req.query.sortBy;
+  const order = req.query.order || "asc";
 
+  if (
+    sortBy &&
+    (!userSortKeys.includes(sortBy) || !allowedOrders.includes(order))
+  ) {
+    return res.status(400).json({ error: "Invalid sort parameters!" });
+  }
   try {
-    const totalCountResult = await totalUsersCount();
-    const totalCount = parseInt(totalCountResult.rows[0].count);
+    const users = await getUsers(filterName, limit, offset, sortBy, order);
+    const totalCount =
+      users.rows.length > 0 ? parseInt(users.rows[0].total_count) : 0;
     const totalPages = Math.ceil(totalCount / limit);
-
-    const users = await getUsers(limit, offset);
-
     const data = convertKeys(users.rows, "camel");
 
     res.json({
@@ -56,11 +65,17 @@ const getUserByIdEndpoint = async (req, res) => {
 
 const createUserEndpoint = async (req, res) => {
   try {
+    const userExists = await emailExists(req.body.email);
+    if (userExists) {
+      return res.status(400).json({ error: "Email already exists!" });
+    }
+
+    const passwordHash = await bcrypt.hash(req.body.password, 10);
     await createUser(
       req.body.firstName,
       req.body.lastName,
       req.body.email,
-      req.body.roleId
+      passwordHash
     );
     let apires = {
       status: 200,
@@ -79,8 +94,7 @@ const updateUserEndpoint = async (req, res) => {
       req.params.id,
       req.body.firstName,
       req.body.lastName,
-      req.body.email,
-      req.body.roleId
+      req.body.email
     );
     let apires = {
       status: 200,
@@ -113,5 +127,4 @@ module.exports = {
   createUserEndpoint,
   updateUserEndpoint,
   deleteUserEndpoint,
-  //searchUserByFirstNameAndLastName,
 };

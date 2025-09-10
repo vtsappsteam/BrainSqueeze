@@ -1,9 +1,14 @@
 import api from "../config";
 
 export const getAllUsers = async (param) => {
-  const response = await api.get(
-    `/users?page=${param.page}&limit=${param.limit}`
-  );
+  const params = new URLSearchParams();
+
+  Object.entries(param).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      params.append(key, value);
+    }
+  });
+  const response = await api.get(`/users?${params.toString()}`);
   return response.data;
 };
 
