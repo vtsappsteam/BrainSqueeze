@@ -1,4 +1,13 @@
 <script setup>
+import { ref } from "vue";
+import EditIcon from "@/assets/icons/edit.svg";
+import DeleteIcon from "@/assets/icons/delete.svg";
+
+const filterName = ref("");
+const limit = ref(100);
+const page = ref(1);
+const totalPages = ref(1);
+
 const props = defineProps({
   users: {
     type: Array,
@@ -6,9 +15,16 @@ const props = defineProps({
   },
 });
 
+const goToPage = (p) => {
+  if (p >= 1 && p <= props.totalPages) {
+    emit("go-to-page", p);
+  }
+};
+
 const emit = defineEmits([
   "handle-edit-existing-user",
   "handle-delete-existing-user",
+  "handle-search-user",
 ]);
 
 const handleEditExistingUser = (id) => {
@@ -18,112 +34,132 @@ const handleEditExistingUser = (id) => {
 const handleDeleteExistingUser = (id) => {
   emit("handle-delete-existing-user", id);
 };
+
+const handleSearch = async () => {
+  emit("handle-search-user", filterName.value);
+};
 </script>
 
 <template>
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Ime</th>
-          <th>Prezime</th>
-          <th>Email</th>
-          <th class="actions">Akcije</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="user in users" :key="user.id">
-          <td>{{ user.id }}</td>
-          <td>{{ user.firstName }}</td>
-          <td>{{ user.lastName }}</td>
-          <td>{{ user.email }}</td>
-          <td class="actions-container">
-            <button
-              class="actions-container__btn-edit"
-              @click="handleEditExistingUser(user.id)"
-            >
-              Uredi
-            </button>
-            <button
-              class="actions-container__btn-delete"
-              @click="handleDeleteExistingUser(user.id)"
-            >
-              Obriši
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="section-container">
+    <div class="table-container">
+      <div class="section-header">
+        <input
+          class="search-input"
+          type="text"
+          placeholder="Pretraži korisnika"
+          v-model="filterName"
+          @keyup.enter="handleSearch"
+        />
+        <button class="search-btn" @click="handleSearch">Pretraži</button>
+      </div>
+      <table class="section-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Ime</th>
+            <th>Prezime</th>
+            <th>Email</th>
+            <th>Akcije</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="user in users" :key="user.id">
+            <td>{{ user.id }}</td>
+            <td>{{ user.firstName }}</td>
+            <td>{{ user.lastName }}</td>
+            <td>{{ user.email }}</td>
+            <td class="actions-cell">
+              <div class="actions-container">
+                <button
+                  type="button"
+                  class="actions-container__btn-edit"
+                  @click="handleEditExistingUser(user.id)"
+                >
+                  <EditIcon />
+                </button>
+                <button
+                  class="actions-container__btn-delete"
+                  @click="handleDeleteExistingUser(user.id)"
+                  :disabled="user.email === 'admin@vtsapstim.edu.rs'"
+                >
+                  <DeleteIcon />
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <button
+        class="pagination-btn"
+        :disabled="page === 1"
+        @click="goToPage(page - 1)"
+      >
+        &laquo;
+      </button>
+      <button
+        v-for="p in totalPages"
+        :key="p"
+        class="pagination-btn"
+        :class="{ active: page === p }"
+        @click="goToPage(p)"
+      >
+        {{ p }}
+      </button>
+      <button
+        class="pagination-btn"
+        :disabled="page === totalPages"
+        @click="goToPage(page + 1)"
+      >
+        &raquo;
+      </button>
+    </div>
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .table-container {
-  padding: 0.5rem;
+  max-height: 620px;
+  overflow-y: auto;
+}
+.section-table {
+  width: 100%;
+  border-collapse: collapse;
+}
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #fff;
+.section-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border: 1px solid #e9ecef;
+}
 
-    thead {
-      background-color: #f9fafb;
-      text-align: left;
-      font-size: 0.85rem;
-      color: #4b5563;
-    }
+.section-table td.wrong-category-cell {
+  text-align: center;
+}
 
-    th,
-    td {
-      padding: 0.75rem 1rem;
-      font-size: 0.9rem;
-      vertical-align: middle;
-      border: 1px solid #e5e7eb;
-    }
+.wrong-category-cell span {
+  font-size: 25px;
+}
 
-    th {
-      font-weight: 600;
-    }
+.section-table thead th {
+  position: sticky;
+  top: 0;
+  background: #f6f7fa;
+  font-weight: bold;
+  z-index: 2;
+  border: #e9ecef 1px solid;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  white-space: nowrap;
+}
 
-    tbody tr {
-      transition: background-color 0.2s ease-in-out;
+.difficulty-cell {
+  min-width: 110px;
+}
 
-      &:hover {
-        background-color: #f3f4f6;
-      }
-    }
-
-    td {
-      color: #374151;
-    }
-
-    .actions {
-      text-align: center;
-      &-container {
-        padding: 0.5rem 0;
-        text-align: center;
-        white-space: nowrap;
-
-        &__btn-edit,
-        &__btn-delete {
-          padding: 0.5rem 1rem;
-          background-color: #2c9dff;
-          color: #fff;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-        }
-
-        &__btn-edit {
-          margin-right: 0.5rem;
-        }
-
-        &__btn-delete {
-          background-color: #ff5252;
-        }
-      }
-    }
-  }
+.actions-cell {
+  width: 105px;
 }
 </style>

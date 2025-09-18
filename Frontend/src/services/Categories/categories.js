@@ -7,6 +7,20 @@ export const getAllCategories = async (param) => {
   return response.data;
 };
 
+export const getAllCategoriesWithDifficulties = async (param) => {
+  const params = new URLSearchParams();
+
+  Object.entries(param).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      params.append(key, value);
+    }
+  });
+  const response = await api.get(
+    `/categories/withDifficulties?${params.toString()}`
+  );
+  return response.data;
+};
+
 export const getCategoryById = async (id) => {
   const response = await api.get(`/categories/${id}`);
   return response.data;

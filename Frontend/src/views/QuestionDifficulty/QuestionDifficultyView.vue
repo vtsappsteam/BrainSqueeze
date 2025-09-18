@@ -10,23 +10,39 @@ import {
 
 const route = useRoute();
 const router = useRouter();
+const selectedLanguage = ref("sr");
 
 const questionDifficultyNameInput = ref("");
+const engQuestionDifficultyNameInput = ref("");
 const questionDifficultyMinThresholdInput = ref("");
 const questionDifficultyMaxThresholdInput = ref("");
+
+const errorMessage = ref("");
+const showErrorModal = ref(false);
 
 const fetchQuestionDifficulty = async (id) => {
   const response = await getQuestionDifficultyById(id);
   const data = response.content;
   questionDifficultyNameInput.value = data.name;
+  engQuestionDifficultyNameInput.value = data.engName;
   questionDifficultyMinThresholdInput.value = data.minThreshold;
   questionDifficultyMaxThresholdInput.value = data.maxThreshold;
-  console.log(response);
 };
 
 const handleSaveQuestionDifficulty = async () => {
+  if (
+    !questionDifficultyNameInput.value ||
+    !engQuestionDifficultyNameInput.value ||
+    !questionDifficultyMinThresholdInput.value ||
+    !questionDifficultyMaxThresholdInput.value
+  ) {
+    errorMessage.value = "Sva polja su obavezna!";
+    showErrorModal.value = true;
+    return;
+  }
   const payload = {
     name: questionDifficultyNameInput.value,
+    engName: engQuestionDifficultyNameInput.value,
     minThreshold: questionDifficultyMinThresholdInput.value,
     maxThreshold: questionDifficultyMaxThresholdInput.value,
   };
@@ -36,14 +52,14 @@ const handleSaveQuestionDifficulty = async () => {
     } else {
       await createQuestionDifficulty(payload);
     }
-    router.push("/question-difficulties");
+    router.push("/difficulties");
   } catch (error) {
     console.error(error, payload);
   }
 };
 
 const handleGoBack = () => {
-  router.push("/question-difficulties");
+  router.push("/difficulties");
 };
 
 onMounted(() => {
@@ -59,21 +75,30 @@ onMounted(() => {
     @handle-go-back="handleGoBack"
   />
   <div>
-    <div class="app">
-      <div>
-        <button>SRPSKI</button>
-        <button>ENGLESKI</button>
-      </div>
+    <div class="language-buttons-bar">
+      <p
+        :class="{ active: selectedLanguage === 'sr' }"
+        @click="selectedLanguage = 'sr'"
+      >
+        SRPSKI
+      </p>
+      <p
+        :class="{ active: selectedLanguage === 'en' }"
+        @click="selectedLanguage = 'en'"
+      >
+        ENGLESKI
+      </p>
     </div>
-    <div>
-      <div>
+    <div class="section-container">
+      <div id="serbianForm" v-if="selectedLanguage === 'sr'">
         <div>
           <label for="questionDifficultyNameInput"> Težina pitanja </label>
           <input
+            class="disabled"
             id="questionDifficultyNameInput"
             v-model="questionDifficultyNameInput"
             type="text"
-            placeholder="Unesite naziv nove težine pitanja"
+            disabled
           />
         </div>
         <div>
@@ -83,7 +108,7 @@ onMounted(() => {
           <input
             id="questionDifficultyMinThresholdInput"
             v-model="questionDifficultyMinThresholdInput"
-            type="text"
+            type="number"
             placeholder="Unesite minimalnu granicu težine pitanja"
           />
         </div>
@@ -94,17 +119,79 @@ onMounted(() => {
           <input
             id="questionDifficultyMaxThresholdInput"
             v-model="questionDifficultyMaxThresholdInput"
+            type="number"
+            placeholder="Unesite maksimalnu granicu težine pitanja"
+          />
+        </div>
+      </div>
+      <div id="englishForm" v-if="selectedLanguage === 'en'">
+        <div>
+          <label for="questionDifficultyNameInput"> Question Difficulty </label>
+          <input
+            class="disabled"
+            id="questionDifficultyNameInput"
+            v-model="engQuestionDifficultyNameInput"
             type="text"
+            disabled
+          />
+        </div>
+        <div>
+          <label for="questionDifficultyMinThresholdInput">
+            Minimum threshold
+          </label>
+          <input
+            id="questionDifficultyMinThresholdInput"
+            v-model="questionDifficultyMinThresholdInput"
+            type="number"
+            placeholder="Unesite minimalnu granicu težine pitanja"
+          />
+        </div>
+        <div>
+          <label for="questionDifficultyMaxThresholdInput">
+            Maximum threshold
+          </label>
+          <input
+            id="questionDifficultyMaxThresholdInput"
+            v-model="questionDifficultyMaxThresholdInput"
+            type="number"
             placeholder="Unesite maksimalnu granicu težine pitanja"
           />
         </div>
       </div>
     </div>
   </div>
+  <div v-if="showErrorModal" class="modal">
+    <div class="modal-content">
+      <p>{{ errorMessage }}</p>
+      <button class="modal-button" @click="showErrorModal = false">
+        Zatvori
+      </button>
+    </div>
+  </div>
 </template>
 
 <style>
-.app {
-  font: DM Sans 14pt;
+input {
+  width: 300px;
+  padding: 10px;
+  margin: 5px 0;
+  box-sizing: border-box;
+  border-radius: 0px;
+}
+
+.disabled {
+  color: #9e9e9e;
+  background-color: #f6f7fa;
+  cursor: not-allowed;
+}
+
+.active {
+  background: #1976d2;
+  font-weight: bold;
+  font-family: "DMSans", sans-serif;
+  background-color: #fff;
+  color: #2c9dff;
+  border: none;
+  letter-spacing: -0.32px;
 }
 </style>

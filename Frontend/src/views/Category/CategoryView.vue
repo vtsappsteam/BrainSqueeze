@@ -11,18 +11,30 @@ import {
 const route = useRoute();
 const router = useRouter();
 
+const selectedLanguage = ref("sr");
+
 const categoryNameInput = ref("");
+const categoryEngNameInput = ref("");
+
+const errorMessage = ref("");
+const showErrorModal = ref(false);
 
 const fetchCategory = async (id) => {
   const response = await getCategoryById(id);
   const data = response.content;
   categoryNameInput.value = data.name;
-  console.log(response);
+  categoryEngNameInput.value = data.engName;
 };
 
 const handleSaveCategory = async () => {
+  if (!categoryNameInput.value || !categoryEngNameInput.value) {
+    errorMessage.value = "Sva polja su obavezna!";
+    showErrorModal.value = true;
+    return;
+  }
   const payload = {
     name: categoryNameInput.value,
+    engName: categoryEngNameInput.value,
   };
   try {
     if (route.query.id) {
@@ -52,31 +64,72 @@ onMounted(() => {
     @handle-save-category="handleSaveCategory"
     @handle-go-back="handleGoBack"
   />
-  <div>
-    <div class="app">
-      <div>
-        <button>SRPSKI</button>
-        <button>ENGLESKI</button>
-      </div>
-    </div>
-    <div>
-      <div>
-        <div>
+  <div class="language-buttons-bar">
+    <p
+      :class="{ active: selectedLanguage === 'sr' }"
+      @click="selectedLanguage = 'sr'"
+    >
+      SRPSKI
+    </p>
+    <p
+      :class="{ active: selectedLanguage === 'en' }"
+      @click="selectedLanguage = 'en'"
+    >
+      ENGLESKI
+    </p>
+  </div>
+  <div class="section-container">
+    <div id="serbianCategoryNameForm" v-if="selectedLanguage === 'sr'">
+      <div class="inputs-row">
+        <div class="form-group">
           <label for="categoryNameInput"> Naziv kategorije </label>
           <input
+            class="input-category"
             id="categoryNameInput"
             v-model="categoryNameInput"
             type="text"
-            placeholder="Unesite naziv nove kategorije"
+            placeholder="Unesite novu kategoriju"
+          />
+        </div>
+      </div>
+    </div>
+    <div id="engCategoryNameForm" v-if="selectedLanguage === 'en'">
+      <div class="inputs-row">
+        <div class="form-group">
+          <label for="categoryEngNameInput"> Category name </label>
+          <input
+            class="input-category"
+            id="categoryEngNameInput"
+            v-model="categoryEngNameInput"
+            type="text"
+            placeholder="Enter new category"
           />
         </div>
       </div>
     </div>
   </div>
+  <div v-if="showErrorModal" class="modal">
+    <div class="modal-content">
+      <p>{{ errorMessage }}</p>
+      <button class="modal-button" @click="showErrorModal = false">
+        Zatvori
+      </button>
+    </div>
+  </div>
 </template>
 
-<style>
-.app {
-  font: DM Sans 14pt;
+<style scoped>
+.active {
+  background: #1976d2;
+  font-weight: bold;
+  font-family: "DMSans", sans-serif;
+  background-color: #fff;
+  color: #2c9dff;
+  border: none;
+  letter-spacing: -0.32px;
+}
+
+.input-category {
+  width: 250px;
 }
 </style>

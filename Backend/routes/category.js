@@ -9,12 +9,17 @@ const {
   deleteCategoryEndpoint,
 } = require("../controllers/categoryController");
 const { validateCategoryRequest } = require("../middlewares/categoryRules");
+const { authorize } = require("../middlewares/authorizationRules");
 
-router.get("/", getAllCategoriesEndpoint);
-router.get("/withDifficulties", getAllCategoriesWithDifficultiesEndpoint);
-router.get("/:id", getCategoryByIdEndpoint);
-router.post("/", validateCategoryRequest, createCategoryEndpoint);
-router.put("/:id", validateCategoryRequest, updateCategoryEndpoint);
-router.delete("/:id", deleteCategoryEndpoint);
+router.get("/", authorize, getAllCategoriesEndpoint);
+router.get(
+  "/withDifficulties",
+  authorize,
+  getAllCategoriesWithDifficultiesEndpoint
+);
+router.get("/:id", authorize, getCategoryByIdEndpoint);
+router.post("/", authorize, validateCategoryRequest, createCategoryEndpoint);
+router.put("/:id", authorize, validateCategoryRequest, updateCategoryEndpoint);
+router.delete("/:id", authorize, deleteCategoryEndpoint);
 
 module.exports = router;

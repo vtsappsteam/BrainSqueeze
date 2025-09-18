@@ -1,0 +1,876 @@
+{
+  "/questions": {
+    "get": {
+      "summary": "Get all questions",
+      "description": "Retrieve a list of all questions.",
+      "tags": ["Questions"],
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "description": "Page number for pagination",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 1
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "description": "Number of questions per page",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 10
+          }
+        },
+        {
+          "name": "categoryId",
+          "in": "query",
+          "description": "Filter by category ID",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "example": "123"
+          }
+        },
+        {
+          "name": "difficultyId",
+          "in": "query",
+          "description": "Filter by question difficulty id",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "example": "123"
+          }
+        },
+        {
+          "name": "question",
+          "in": "query",
+          "description": "Filter by question name",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "example": "Koji je glavni grad"
+          }
+        },
+        {
+          "name": "timesViewedMin",
+          "in": "query",
+          "description": "Filter by number of times viewed - specified minimum times viewed",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "example": 100
+          }
+        },
+        {
+          "name": "timesViewedMax",
+          "in": "query",
+          "description": "Filter by number of times viewed - specified maximum times viewed",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "example": 500
+          }
+        },
+        {
+          "name": "percentAnsweredCorrectlyMin",
+          "in": "query",
+          "description": "Filter by percentage of correct answers - specified minimum percentage",
+          "required": false,
+          "schema": {
+            "type": "number",
+            "format": "float",
+            "example": 75.5
+          }
+        },
+        {
+          "name": "percentAnsweredCorrectlyMax",
+          "in": "query",
+          "description": "Filter by percentage of correct answers - specified maximum percentage",
+          "required": false,
+          "schema": {
+            "type": "number",
+            "format": "float",
+            "example": 90.0
+          }
+        },
+        {
+          "name": "sortBy",
+          "in": "query",
+          "description": "Sort field",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "id",
+              "timesViewed",
+              "percentCorrect",
+              "categoryName",
+              "difficultyName"
+            ],
+            "example": "id"
+          }
+        },
+        {
+          "name": "order",
+          "in": "query",
+          "description": "Sort order",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": ["asc", "desc"],
+            "example": "asc"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "A list of questions.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "limit": {
+                    "type": "integer",
+                    "example": 10
+                  },
+                  "page": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "totalPages": {
+                    "type": "integer",
+                    "example": 5
+                  },
+                  "totalQuestions": {
+                    "type": "strinintegerg",
+                    "example": 50
+                  },
+                  "content": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "123"
+                        },
+                        "question": {
+                          "type": "string",
+                          "example": "What is the capital of France?"
+                        },
+                        "correctAnswer": {
+                          "type": "string",
+                          "example": "Paris"
+                        },
+                        "timesViewed": {
+                          "type": "string",
+                          "example": "150"
+                        },
+                        "answeredCorrectly": {
+                          "type": "integer",
+                          "example": "120"
+                        },
+                        "difficultyName": {
+                          "type": "string",
+                          "example": "Easy"
+                        },
+                        "categoryName": {
+                          "type": "string",
+                          "example": "Geography"
+                        },
+                        "minThreshold": {
+                          "type": "integer",
+                          "example": 50
+                        },
+                        "maxThreshold": {
+                          "type": "integer",
+                          "example": 75
+                        },
+                        "totalCount": {
+                          "type": "string",
+                          "example": "10"
+                        },
+                        "wrongCategory": {
+                          "type": "boolean",
+                          "example": false
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized"
+        }
+      }
+    },
+    "post": {
+      "summary": "Create a new question",
+      "description": "Add a new question to the list.",
+      "tags": ["Questions"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "question",
+                "correctAnswer",
+                "difficultyId",
+                "categoryId"
+              ],
+              "properties": {
+                "question": {
+                  "type": "string",
+                  "example": "Koji je glavni grad Francuske?"
+                },
+                "correctAnswer": {
+                  "type": "string",
+                  "example": "Pariz"
+                },
+                "wrongAnswer1": {
+                  "type": "string",
+                  "example": "London"
+                },
+                "wrongAnswer2": {
+                  "type": "string",
+                  "example": "Berlin"
+                },
+                "wrongAnswer3": {
+                  "type": "string",
+                  "example": "Madrid"
+                },
+                "engQuesion": {
+                  "type": "string",
+                  "example": "What is the capital of France?"
+                },
+                "engCorrectAnswer": {
+                  "type": "string",
+                  "example": "Paris"
+                },
+                "engWrongAnswer1": {
+                  "type": "string",
+                  "example": "London"
+                },
+                "engWrongAnswer2": {
+                  "type": "string",
+                  "example": "Berlin"
+                },
+                "engWrongAnswer3": {
+                  "type": "string",
+                  "example": "Madrid"
+                },
+                "questionDifficultyId": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "categoryId": {
+                  "type": "integer",
+                  "example": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Question created successfully."
+        },
+        "400": {
+          "description": "Bad request."
+        },
+        "401": {
+          "description": "Unauthorized."
+        }
+      }
+    }
+  },
+  "/questions/{id}": {
+    "get": {
+      "summary": "Get a question by ID",
+      "description": "Retrieve details of a specific question using its ID.",
+      "tags": ["Questions"],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "ID of the question to retrieve",
+          "schema": {
+            "type": "string",
+            "example": "123"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Details of the question.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "123"
+                      },
+                      "question": {
+                        "type": "string",
+                        "example": "Koji je glavni grad Francuske?"
+                      },
+                      "correctAnswer": {
+                        "type": "string",
+                        "example": "Pariz"
+                      },
+                      "wrongAnswer1": {
+                        "type": "string",
+                        "example": "London"
+                      },
+                      "wrongAnswer2": {
+                        "type": "string",
+                        "example": "Berlin"
+                      },
+                      "wrongAnswer3": {
+                        "type": "string",
+                        "example": "Madrid"
+                      },
+                      "timesViewed": {
+                        "type": "string",
+                        "example": "150"
+                      },
+                      "answeredCorrectly": {
+                        "type": "string",
+                        "example": "120"
+                      },
+                      "difficultyId": {
+                        "type": "string",
+                        "example": "123"
+                      },
+                      "categoryId": {
+                        "type": "string",
+                        "example": "123"
+                      },
+                      "engQuesion": {
+                        "type": "string",
+                        "example": "What is the capital of France?"
+                      },
+                      "engCorrectAnswer": {
+                        "type": "string",
+                        "example": "Paris"
+                      },
+                      "engWrongAnswer1": {
+                        "type": "string",
+                        "example": "London"
+                      },
+                      "engWrongAnswer2": {
+                        "type": "string",
+                        "example": "Berlin"
+                      },
+                      "engWrongAnswer3": {
+                        "type": "string",
+                        "example": "Madrid"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad request."
+        },
+        "401": {
+          "description": "Unauthorized."
+        },
+        "404": {
+          "description": "Question not found."
+        }
+      }
+    },
+    "put": {
+      "summary": "Update a question by ID",
+      "description": "Update the details of a specific question using its ID.",
+      "tags": ["Questions"],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "ID of the question to update",
+          "schema": {
+            "type": "string",
+            "example": "123"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "question",
+                "correctAnswer",
+                "wrongAnswer1",
+                "wrongAnswer2",
+                "wrongAnswer3",
+                "engQuesion",
+                "engCorrectAnswer",
+                "engWrongAnswer1",
+                "engWrongAnswer2",
+                "engWrongAnswer3",
+                "difficultyId",
+                "categoryId"
+              ],
+              "properties": {
+                "question": {
+                  "type": "string",
+                  "example": "Koji je glavni grad Francuske?"
+                },
+                "correctAnswer": {
+                  "type": "string",
+                  "example": "Pariz"
+                },
+                "wrongAnswer1": {
+                  "type": "string",
+                  "example": "London"
+                },
+                "wrongAnswer2": {
+                  "type": "string",
+                  "example": "Berlin"
+                },
+                "wrongAnswer3": {
+                  "type": "string",
+                  "example": "Madrid"
+                },
+                "engQuesion": {
+                  "type": "string",
+                  "example": "What is the capital of France?"
+                },
+                "engCorrectAnswer": {
+                  "type": "string",
+                  "example": "Paris"
+                },
+                "engWrongAnswer1": {
+                  "type": "string",
+                  "example": "London"
+                },
+                "engWrongAnswer2": {
+                  "type": "string",
+                  "example": "Berlin"
+                },
+                "engWrongAnswer3": {
+                  "type": "string",
+                  "example": "Madrid"
+                },
+                "questionDifficultyId": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "categoryId": {
+                  "type": "integer",
+                  "example": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Question updated successfully."
+        },
+        "400": {
+          "description": "Bad request."
+        },
+        "401": {
+          "description": "Unauthorized."
+        },
+        "404": {
+          "description": "Question not found."
+        }
+      }
+    },
+    "delete": {
+      "summary": "Delete a question by ID",
+      "description": "Remove a specific question from the list using its ID.",
+      "tags": ["Questions"],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "ID of the question to delete",
+          "schema": {
+            "type": "string",
+            "example": "123"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Question deleted successfully."
+        },
+        "401": {
+          "description": "Unauthorized."
+        }
+      }
+    }
+  },
+  "/questions/export": {
+    "get": {
+      "summary": "Export questions to Excel",
+      "description": "Export the list of questions to a Excel file.",
+      "tags": ["Questions"],
+      "responses": {
+        "200": {
+          "description": "Excel file containing the list of questions.",
+          "content": {
+            "text/csv": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized"
+        }
+      }
+    }
+  },
+  "/questions/exportRaw": {
+    "get": {
+      "summary": "Export raw questions to Excel",
+      "description": "Export the raw list of questions to a Excel file.",
+      "tags": ["Questions"],
+      "parameters": [
+        {
+          "name": "categoryId",
+          "in": "query",
+          "description": "Filter by category ID",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "example": "123"
+          }
+        },
+        {
+          "name": "difficultyId",
+          "in": "query",
+          "description": "Filter by difficulty ID",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "example": "123"
+          }
+        },
+        {
+          "name": "question",
+          "in": "query",
+          "description": "Filter by question name",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "example": "Koji je glavni grad"
+          }
+        },
+        {
+          "name": "timesViewedMin",
+          "in": "query",
+          "description": "Filter by number of times viewed - specified minimum times viewed",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "example": 100
+          }
+        },
+        {
+          "name": "timesViewedMax",
+          "in": "query",
+          "description": "Filter by number of times viewed - specified maximum times viewed",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "example": 500
+          }
+        },
+        {
+          "name": "percentAnsweredCorrectlyMin",
+          "in": "query",
+          "description": "Filter by percentage of correct answers - specified minimum percentage",
+          "required": false,
+          "schema": {
+            "type": "number",
+            "format": "float",
+            "example": 75.5
+          }
+        },
+        {
+          "name": "percentAnsweredCorrectlyMax",
+          "in": "query",
+          "description": "Filter by percentage of correct answers - specified maximum percentage",
+          "required": false,
+          "schema": {
+            "type": "number",
+            "format": "float",
+            "example": 90.0
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Excel file containing the raw list of questions.",
+          "content": {
+            "text/csv": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized"
+        }
+      }
+    }
+  },
+  "/questions/import": {
+    "post": {
+      "summary": "Import questions from Excel or CSV",
+      "description": "Import questions from an Excel or CSV file.",
+      "tags": ["Questions"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "format": "binary",
+                  "description": "Excel or CSV file to upload"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Questions imported successfully."
+        },
+        "400": {
+          "description": "Bad request."
+        },
+        "401": {
+          "description": "Unauthorized."
+        }
+      }
+    }
+  },
+  "/questions/quizResults": {
+    "post": {
+      "summary": "Submit quiz results (external)",
+      "description": "Submit the results of a quiz attempt.",
+      "tags": ["Questions"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["questionId", "answeredCorrectly"],
+                "properties": {
+                  "questionId": {
+                    "type": "string"
+                  },
+                  "answeredCorrectly": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            "example": [
+              {
+                "questionId": "123",
+                "answeredCorrectly": false
+              },
+              {
+                "questionId": "123",
+                "answeredCorrectly": true
+              }
+            ]
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Quiz results submitted successfully."
+        },
+        "400": {
+          "description": "Bad request."
+        },
+        "401": {
+          "description": "Unauthorized."
+        }
+      }
+    }
+  },
+  "/questions/eng": {
+    "get": {
+      "summary": "Get questions in English (external)",
+      "tags": ["Questions"],
+      "responses": {
+        "200": {
+          "description": "List of questions in English.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "totalQuestions": {
+                    "type": "integer",
+                    "example": 50
+                  },
+                  "content": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "123"
+                        },
+                        "engQuestion": {
+                          "type": "string",
+                          "example": "What is the capital of France?"
+                        },
+                        "engCorrectAnswer": {
+                          "type": "string",
+                          "example": "Paris"
+                        },
+                        "engWrongAnswer1": {
+                          "type": "string",
+                          "example": "London"
+                        },
+                        "engWrongAnswer2": {
+                          "type": "string",
+                          "example": "Berlin"
+                        },
+                        "engWrongAnswer3": {
+                          "type": "string",
+                          "example": "Madrid"
+                        },
+                        "categoryName": {
+                          "type": "string",
+                          "example": "Geography"
+                        },
+                        "difficultyName": {
+                          "type": "string",
+                          "example": "Easy"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized."
+        }
+      }
+    }
+  },
+  "/questions/srb": {
+    "get": {
+      "summary": "Get questions in Serbian (external)",
+      "tags": ["Questions"],
+      "responses": {
+        "200": {
+          "description": "List of questions in Serbian.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "totalQuestions": {
+                    "type": "integer",
+                    "example": 50
+                  },
+                  "content": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "123"
+                        },
+                        "question": {
+                          "type": "string",
+                          "example": "Koji je glavni grad Francuske?"
+                        },
+                        "correctAnswer": {
+                          "type": "string",
+                          "example": "Pariz"
+                        },
+                        "wrongAnswer1": {
+                          "type": "string",
+                          "example": "London"
+                        },
+                        "wrongAnswer2": {
+                          "type": "string",
+                          "example": "Berlin"
+                        },
+                        "wrongAnswer3": {
+                          "type": "string",
+                          "example": "Madrid"
+                        },
+                        "categoryName": {
+                          "type": "string",
+                          "example": "Geografija"
+                        },
+                        "difficultyName": {
+                          "type": "string",
+                          "example": "Lako"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
