@@ -81,6 +81,7 @@ const handleSearch = async () => {
                 <button
                   class="actions-container__btn-delete"
                   @click="handleDeleteExistingUser(user.id)"
+                  :disabled="user.email === 'admin@vtsapstim.edu.rs'"
                 >
                   <DeleteIcon />
                 </button>

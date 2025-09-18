@@ -165,6 +165,25 @@ button {
       margin-left: 8px;
     }
   }
+  &__btn-download-template {
+    padding: 9px 19px;
+    background: #dcebee;
+    color: #00354b;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 122.19px;
+    height: 36px;
+
+    .btn-icon {
+      transform: rotate(90deg);
+      transform-origin: center;
+      vertical-align: middle;
+      margin-bottom: 1px;
+      margin-left: 8px;
+    }
+  }
+
   &__btn-import {
     padding: 9px 19px;
     background: #dcebee;
@@ -296,6 +315,10 @@ button {
     height: 25px;
     fill: #ff5252;
     margin-left: 5px;
+  }
+  &__btn-delete:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
 

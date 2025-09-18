@@ -36,6 +36,18 @@ const handleImportQuestions = () => {
 const handleExportQuestions = () => {
   emit("handle-export-questions");
 };
+
+const handleDownloadTemplate = () => {
+  const fileName = "import_template.xlsx";
+  const fileUrl = `/import_template.xlsx`;
+
+  const link = document.createElement("a");
+  link.href = fileUrl;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 </script>
 
 <template>
@@ -47,6 +59,12 @@ const handleExportQuestions = () => {
       style="display: none"
       @change="onFileSelected"
     />
+    <button
+      class="page-subheader__btn-download-template"
+      @click="handleDownloadTemplate"
+    >
+      Template <ExportIcon class="btn-icon" />
+    </button>
     <button class="page-subheader__btn-import" @click="handleImportQuestions">
       Import<ImportIcon class="btn-icon" />
     </button>
