@@ -102,7 +102,7 @@ onMounted(() => {
           placeholder="Unesite email korisnika"
           required
           :disabled="
-            route.query.id == 1 && emailInput === 'admin@vtsapstim.edu.rs'
+            route.query.id == 1 && emailInput === 'admin@vtsappstim.edu.rs'
           "
         />
       </div>

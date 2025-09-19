@@ -73,8 +73,8 @@ const deleteUser = async (userId) => {
   if (result.rows.length === 0) {
     throw new Error("User not found");
   }
-  if (result.rows[0].email === "admin@vtsapstim.edu.rs") {
-    const err = new Error("The user with that email cannot be deleted");
+  if (result.rows[0].email === "admin@vtsappstim.edu.rs") {
+    const err = new Error("The user with this email cannot be deleted");
     err.status = 403;
     throw err;
   }
