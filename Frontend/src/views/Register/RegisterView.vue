@@ -46,43 +46,45 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="register-container">
-    <h2>Register</h2>
-    <form @submit.prevent="handleRegister">
-      <div>
-        <label for="email">Email:</label>
-        <input id="email" v-model="email" type="email" required />
-      </div>
-      <div>
-        <label for="oldPassword">Current password:</label>
-        <input
-          id="oldPassword"
-          v-model="oldPassword"
-          type="password"
-          required
-        />
-      </div>
-      <div>
-        <label for="newPassword">New password:</label>
-        <input
-          id="newPassword"
-          v-model="newPassword"
-          type="password"
-          required
-        />
-      </div>
-      <div>
-        <label for="confirmPassword">Confirm password:</label>
-        <input
-          id="confirmPassword"
-          v-model="confirmPassword"
-          type="password"
-          required
-        />
-      </div>
-      <button type="submit">Save</button>
-      <div v-if="error" style="color: red; margin-top: 10px">{{ error }}</div>
-    </form>
+  <div class="register-background">
+    <div class="register-container">
+      <h2>Register</h2>
+      <form @submit.prevent="handleRegister">
+        <div>
+          <label for="email">Email:</label>
+          <input id="email" v-model="email" type="email" required />
+        </div>
+        <div>
+          <label for="oldPassword">Current password:</label>
+          <input
+            id="oldPassword"
+            v-model="oldPassword"
+            type="password"
+            required
+          />
+        </div>
+        <div>
+          <label for="newPassword">New password:</label>
+          <input
+            id="newPassword"
+            v-model="newPassword"
+            type="password"
+            required
+          />
+        </div>
+        <div>
+          <label for="confirmPassword">Confirm password:</label>
+          <input
+            id="confirmPassword"
+            v-model="confirmPassword"
+            type="password"
+            required
+          />
+        </div>
+        <button type="submit">Save</button>
+        <div v-if="error" style="color: red; margin-top: 10px">{{ error }}</div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -91,7 +93,7 @@ onMounted(() => {
   max-width: 400px;
   margin: 40px auto;
   padding: 24px;
-  border: 1px solid #ccc;
+  border: 1px solid #e9ecef;
   border-radius: 8px;
   background: #fff;
 }
@@ -110,17 +112,19 @@ onMounted(() => {
   width: 100%;
   padding: 8px;
   box-sizing: border-box;
+  border-radius: 6px;
 }
 .register-container button {
   width: 100%;
   padding: 10px;
-  background: #1976d2;
+  background: #1d90a8;
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
 }
 .register-container button:hover {
-  background: #1565c0;
+  background: #1d90a8;
+  opacity: 0.8;
 }
 </style>

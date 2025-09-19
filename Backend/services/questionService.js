@@ -143,7 +143,7 @@ const getSrbQuestions = async () => {
 
 const getEngQuestions = async () => {
   const questions = await pool.query(
-    `SELECT q.id, eng_question, eng_correct_answer, eng_wrong_answer_1, eng_wrong_answer_2, eng_wrong_answer_3, c.engName as category_name, qd.engName AS difficulty_name
+    `SELECT q.id, eng_question, eng_correct_answer, eng_wrong_answer_1, eng_wrong_answer_2, eng_wrong_answer_3, c.eng_name as category_name, qd.eng_name AS difficulty_name
         FROM ${tableNames.QUESTION_TABLE} AS q, ${tableNames.CATEGORY_TABLE} AS c, ${tableNames.DIFFICULTY_TABLE} AS qd
         WHERE q.category_id = c.id AND q.difficulty_id = qd.id
         ORDER BY created_at`

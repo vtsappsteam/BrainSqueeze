@@ -117,7 +117,9 @@ const deleteUserEndpoint = async (req, res) => {
     res.status(200).json(apires);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Error while deleting a User!" });
+    res.status(err.status || 500).json({
+      error: err.message || "Error while deleting a User!",
+    });
   }
 };
 

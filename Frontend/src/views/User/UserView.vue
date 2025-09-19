@@ -101,6 +101,9 @@ onMounted(() => {
           type="email"
           placeholder="Unesite email korisnika"
           required
+          :disabled="
+            route.query.id == 1 && emailInput === 'admin@vtsappstim.edu.rs'
+          "
         />
       </div>
       <div v-if="!route.query.id" class="form-group">
